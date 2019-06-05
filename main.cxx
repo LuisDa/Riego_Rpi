@@ -22,6 +22,7 @@
  */
 #include <gtk/gtk.h>
 #include <iostream>
+#include <bcm2835.h>
 
 
 GtkWidget *image_button_down;
@@ -65,10 +66,20 @@ gboolean event_button_release_event (GtkWidget *widget, GdkEventButton *event, g
 
 /* Our new improved callback. The data passed to this function
 * is printed to stdout. */
-void callback( GtkWidget *widget, gpointer data )
+void callback_1( GtkWidget *widget, gpointer data )
 {
 	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	
+	bcm2835_gpio_write(RPI_GPIO_P1_11, HIGH);
 }
+
+void callback_2( GtkWidget *widget, gpointer data )
+{
+	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	
+	bcm2835_gpio_write(RPI_GPIO_P1_11, LOW);
+}
+
 /* another callback */
 gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 {
@@ -81,6 +92,11 @@ gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 	//---------------------------------
 int main(int argc, char **argv)
 {
+	if (!bcm2835_init()) return 1;
+	
+	/*Ponemos el pin 11 como salida*/
+	bcm2835_gpio_fsel(RPI_GPIO_P1_11, BCM2835_GPIO_FSEL_OUTP);
+	
 	/* GtkWidget is the storage type for widgets */
 	GtkWidget *window;
 	GtkWidget *button;
@@ -110,7 +126,7 @@ int main(int argc, char **argv)
 	/* Put the box into the main window. */
 	gtk_container_add (GTK_CONTAINER (window), box1);
 	/* Creates a new button with the label "Button 1". */
-	button = gtk_button_new_with_label ("Button 1");
+	button = gtk_button_new_with_label ("Button_1");
 	button1 = new GtkButton;//("Boton 1");
 	button2 = new GtkButton;//("Boton 2");
 	gtk_button_set_label(button1, "Boton_1");
@@ -120,7 +136,7 @@ int main(int argc, char **argv)
 	
 	/* Now when the button is clicked, we call the "callback" function
 	* with a pointer to "button 1" as its argument */
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback), (gpointer) "button 1");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_1), (gpointer) "button_1");
 	
 	/* Instead of gtk_container_add, we pack this button into the invisible
 	 *  box, which has been packed into the window. */
@@ -137,7 +153,7 @@ int main(int argc, char **argv)
 	
 	/* Call the same callback function with a different argument,
 	* passing a pointer to "button 2" instead. */
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback), (gpointer) "button 2");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_2), (gpointer) "button_2");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	/* The order in which we show the buttons is not really important,
 	but I

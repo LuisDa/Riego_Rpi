@@ -9,7 +9,7 @@ OBJ = main.o
 #DEPS = main.cxx
 
 #Any special libraries you are using in your project (e.g. -lbcm2835 -lrt `pkg-config --libs gtk+-3.0` ), or leave blank
-LIBS = `pkg-config --libs gtk+-3.0`
+LIBS = -lbcm2835 `pkg-config --libs gtk+-3.0`
 
 #Set any compiler flags you want to use (e.g. -I/usr/include/somefolder `pkg-config --cflags gtk+-3.0` ), or leave blank
 CFLAGS = `pkg-config --cflags gtk+-3.0` -lrt 
