@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 	
 	button = gtk_button_new_with_label ("Button 3");
 	gtk_widget_set_size_request(button,2,2);
-	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);
 		
 	
 	/* The order in which we show the buttons is not really important,
@@ -171,6 +171,7 @@ int main(int argc, char **argv)
 	* recommend showing the window last, so it all pops up at once. */
 	gtk_widget_show (button);
 	gtk_widget_show (box1);
+	gtk_widget_show (box2);
 	gtk_widget_show (hbox);
 	gtk_widget_show (window);
 	/* Rest in gtk_main and wait for the fun to begin! */
