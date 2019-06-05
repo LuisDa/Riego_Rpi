@@ -100,9 +100,12 @@ int main(int argc, char **argv)
 	/* GtkWidget is the storage type for widgets */
 	GtkWidget *window;
 	GtkWidget *button;
-	GtkButton *button1;
-	GtkButton *button2;	
-	GtkWidget *box1;
+	//GtkButton *button1;
+	//GtkButton *button2;	
+	GtkWidget *box1;	
+	GtkWidget *box2;
+	
+	GtkWidget *hbox;
 	/* This is called in all GTK applications. Arguments are parsed
 	* from the command line and are returned to the application. */
 	gtk_init (&argc, &argv);
@@ -122,15 +125,15 @@ int main(int argc, char **argv)
 	/* We create a box to pack widgets into. This is described in detail
 	* in the "packing" section. The box is not really visible, it
 	* is just used as a tool to arrange widgets. */
-	box1 = gtk_vbox_new (FALSE, 10);
+	box1 = gtk_vbox_new (FALSE, 5);
 	/* Put the box into the main window. */
 	gtk_container_add (GTK_CONTAINER (window), box1);
 	/* Creates a new button with the label "Button 1". */
 	button = gtk_button_new_with_label ("Button_1");
-	button1 = new GtkButton;//("Boton 1");
-	button2 = new GtkButton;//("Boton 2");
-	gtk_button_set_label(button1, "Boton_1");
-	gtk_button_set_label(button2, "Boton_2");
+	//button1 = new GtkButton;//("Boton 1");
+	//button2 = new GtkButton;//("Boton 2");
+	//gtk_button_set_label(button1, "Boton_1");
+	//gtk_button_set_label(button2, "Boton_2");
 		
 	gtk_widget_set_size_request(button,2,2);
 	
@@ -155,6 +158,14 @@ int main(int argc, char **argv)
 	* passing a pointer to "button 2" instead. */
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_2), (gpointer) "button_2");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);
+	
+	button = gtk_button_new_with_label ("Button 3");
+	gtk_widget_set_size_request(button,2,2);
+	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
+	
+	
+	
 	/* The order in which we show the buttons is not really important,
 	but I
 	* recommend showing the window last, so it all pops up at once. */
