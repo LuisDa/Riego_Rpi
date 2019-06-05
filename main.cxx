@@ -165,7 +165,7 @@ int main(int argc, char **argv)
 	gtk_widget_set_size_request(button,2,2);
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	
-	//Prueba para GIT solamente
+	//Prueba para GIT solamente... y otra más
 	
 	/* The order in which we show the buttons is not really important,
 	but I
