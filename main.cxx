@@ -28,6 +28,8 @@
 GtkWidget *image_button_down;
 GtkWidget *event_box_button_down;
 
+unsigned char gpio_status = 0x00; //Byte para controlar el estado de cada salida de GPIO
+
 //***********************************************
 //***********************************************
 //********** A BUTTON HAS BEEN PRESSED **********
@@ -70,14 +72,70 @@ void callback_1( GtkWidget *widget, gpointer data )
 {
 	g_print ("Hello again - %s was pressed\n", (gchar *) data);
 	
-	bcm2835_gpio_write(RPI_GPIO_P1_11, HIGH);
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_11, HIGH);
 }
 
 void callback_2( GtkWidget *widget, gpointer data )
 {
 	g_print ("Hello again - %s was pressed\n", (gchar *) data);
 	
-	bcm2835_gpio_write(RPI_GPIO_P1_11, LOW);
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_13, HIGH);
+}
+
+void callback_3( GtkWidget *widget, gpointer data )
+{
+	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_33, HIGH);
+}
+
+void callback_4( GtkWidget *widget, gpointer data )
+{
+	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_35, HIGH);
+}
+
+void callback_5( GtkWidget *widget, gpointer data )
+{
+	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_37, HIGH);
+}
+
+void callback_6( GtkWidget *widget, gpointer data )
+{
+	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_11, LOW);
+}
+
+void callback_7( GtkWidget *widget, gpointer data )
+{
+	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_13, LOW);
+}
+
+void callback_8( GtkWidget *widget, gpointer data )
+{
+	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
+}
+
+void callback_9( GtkWidget *widget, gpointer data )
+{
+	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);
+}
+
+void callback_10( GtkWidget *widget, gpointer data )
+{
+	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
 }
 
 /* another callback */
@@ -95,7 +153,11 @@ int main(int argc, char **argv)
 	if (!bcm2835_init()) return 1;
 	
 	/*Ponemos el pin 11 como salida*/
-	bcm2835_gpio_fsel(RPI_GPIO_P1_11, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_11, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_13, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_33, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_35, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_37, BCM2835_GPIO_FSEL_OUTP);
 	
 	/* GtkWidget is the storage type for widgets */
 	GtkWidget *window;
@@ -111,7 +173,7 @@ int main(int argc, char **argv)
 	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	/* This is a new call, which just sets the title of our
 	* new window to "Hello Buttons!" */
-	gtk_window_set_title (GTK_WINDOW (window), "Hello Buttons!");
+	gtk_window_set_title (GTK_WINDOW (window), "GÜINDOU");
 	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);		//Size of the the client area (excluding the additional areas provided by the window manager)
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	
@@ -152,24 +214,64 @@ int main(int argc, char **argv)
 	gtk_widget_show (button);
 	//gtk_widget_show (button1);
 	/* Do these same steps again to create a second button */
-	button = gtk_button_new_with_label ("Button 2");
-	gtk_widget_set_size_request(button,2,2);
-	
-	/* Call the same callback function with a different argument,
-	* passing a pointer to "button 2" instead. */
+	button = gtk_button_new_with_label ("Button_2");
+	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_2), (gpointer) "button_2");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
+
+	button = gtk_button_new_with_label ("Button_3");
+	gtk_widget_set_size_request(button,2,2);	
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_3), (gpointer) "button_3");
+	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);	
+
+	button = gtk_button_new_with_label ("Button_4");
+	gtk_widget_set_size_request(button,2,2);	
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_4), (gpointer) "button_4");
+	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);	
 	
-	button = gtk_button_new_with_label ("Button 3");
+	button = gtk_button_new_with_label ("Button_5");
+	gtk_widget_set_size_request(button,2,2);	
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_5), (gpointer) "button_5");
+	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);	
+	
+	button = gtk_button_new_with_label ("Button_6");
 	gtk_widget_set_size_request(button,2,2);
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_6), (gpointer) "button_6");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);
-		
+	gtk_widget_show (button);
+	
+	button = gtk_button_new_with_label ("Button_7");
+	gtk_widget_set_size_request(button,2,2);
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_7), (gpointer) "button_7");
+	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
+	gtk_widget_show (button);
+
+	button = gtk_button_new_with_label ("Button_8");
+	gtk_widget_set_size_request(button,2,2);
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_8), (gpointer) "button_8");
+	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
+	gtk_widget_show (button);
+	
+	button = gtk_button_new_with_label ("Button_9");
+	gtk_widget_set_size_request(button,2,2);
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_9), (gpointer) "button_9");
+	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
+	gtk_widget_show (button);
+	
+	button = gtk_button_new_with_label ("Button_10");
+	gtk_widget_set_size_request(button,2,2);
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_10), (gpointer) "button_10");
+	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
+	gtk_widget_show (button);
 	
 	/* The order in which we show the buttons is not really important,
 	but I
 	* recommend showing the window last, so it all pops up at once. */
-	gtk_widget_show (button);
+	
 	gtk_widget_show (box1);
 	gtk_widget_show (box2);
 	gtk_widget_show (hbox);
