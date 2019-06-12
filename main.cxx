@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 #include <iostream>
 #include <bcm2835.h>
+#include <time.h>
 
 
 unsigned char gpio_status = 0x00; //Byte para controlar el estado de cada salida de GPIO
@@ -99,6 +100,16 @@ void callback_10( GtkWidget *widget, gpointer data )
 	bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
 }
 
+//Callback para el TIMER
+static gboolean timer_event(GtkWidget *widget)
+{
+	g_print ("Saltose el evento del TIMER\n");
+	
+	return TRUE; //Si devuelve TRUE, el temporizador volverá a lanzarse, si devuelve FALSE, se detiene.
+}
+
+
+
 /* another callback */
 gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 {
@@ -127,6 +138,7 @@ int main(int argc, char **argv)
 	GtkWidget *box2;	
 	GtkWidget *hbox;
 	
+	
 	/* This is called in all GTK applications. Arguments are parsed
 	* from the command line and are returned to the application. */
 	gtk_init (&argc, &argv);
@@ -136,6 +148,7 @@ int main(int argc, char **argv)
 	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);		//Size of the the client area (excluding the additional areas provided by the window manager)
 	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
 	
+	g_timeout_add(1000, (GSourceFunc) timer_event, (gpointer) window); //Configuramos el temporizador para que genere un evento cada segundo (1000 ms)
 	
 	g_signal_connect (G_OBJECT (window), "delete_event", G_CALLBACK (delete_event), NULL);	
 	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
