@@ -20,6 +20,7 @@
  * 
  * 
  */
+#include <cairo.h> 
 #include <gtk/gtk.h>
 #include <iostream>
 #include <bcm2835.h>
@@ -27,6 +28,8 @@
 
 
 unsigned char gpio_status = 0x00; //Byte para controlar el estado de cada salida de GPIO
+
+cairo_t *cr = NULL;
 
 /* Our new improved callback. The data passed to this function
 * is printed to stdout. */
@@ -156,9 +159,12 @@ int main(int argc, char **argv)
 	/* We create a box to pack widgets into. This is described in detail
 	* in the "packing" section. The box is not really visible, it
 	* is just used as a tool to arrange widgets. */
-	hbox = gtk_hbox_new (FALSE, 8);	
-	box1 = gtk_vbox_new (FALSE, 5);
-	box2 = gtk_vbox_new (FALSE, 5);
+	//hbox = gtk_hbox_new (FALSE, 8);	
+	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
+	//box1 = gtk_vbox_new (FALSE, 5);
+	box1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+	//box2 = gtk_vbox_new (FALSE, 5);
+	box2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 
 	gtk_container_add (GTK_CONTAINER (window), hbox);
 	gtk_box_pack_start(GTK_BOX(hbox), box1, FALSE, FALSE, 0);
