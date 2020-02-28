@@ -20,19 +20,99 @@
  * 
  * 
  */
+#include <stdio.h>
+#include <stdlib.h>
 #include <cairo.h> 
 #include <gtk/gtk.h>
 #include <iostream>
 #include <bcm2835.h>
 #include <time.h>
 #include <math.h>
+#include <sys/sem.h>
+#include <pthread.h>
 
+#define PIN RPI_GPIO_P1_12
+
+// and it is controlled by PWM channel 0
+#define PWM_CHANNEL 0
+
+// This controls the max range of the PWM signal
+#define RANGE 1024
+
+//#include <wiringPi.h> //Da conflicto con bcm2835.h... lo mejor será destripar el fichero y coger lo que nos interese para generar un PWM
+
+const int PWM_pin = 1;   /* GPIO 1 as per WiringPi, GPIO18 as per BCM */
 
 unsigned char gpio_status = 0x00; //Byte para controlar el estado de cada salida de GPIO
 
 //cairo_t *cr = NULL;
 GdkColor color;
 GdkRGBA rgba;
+
+//Semáforos
+union semun {
+	int val;
+	struct semid_ds *buf;
+	unsigned short *array;
+};
+
+static int semaphore1_id;
+
+static int semaphore1_get_access(void)
+{
+	struct sembuf sem_b;
+	sem_b.sem_num = 0;
+	sem_b.sem_op = -1; /* P() */
+	sem_b.sem_flg = SEM_UNDO;
+	
+	if (semop(semaphore1_id, &sem_b, 1) == -1)		//Wait until free
+	{
+		fprintf(stderr, "semaphore1_get_access failed\n");
+		return(0);
+	}
+	
+	return(1);	
+}
+
+static int semaphore1_release_access(void)
+{
+	struct sembuf sem_b;
+	sem_b.sem_num = 0;
+	sem_b.sem_op = 1; /* V() */
+	sem_b.sem_flg = SEM_UNDO;
+	if (semop(semaphore1_id, &sem_b, 1) == -1)
+	{
+		fprintf(stderr, "semaphore1_release_access failed\n");
+		return(0);
+	}
+	return(1);	
+}
+
+//Hebras
+pthread_t hebra1;
+pthread_t hebra2;
+int id_hebra1;
+int id_hebra2;
+
+void *funcion_hebra1 (void *parametros)
+{
+	//while(true)
+	for (int i = 0; i < 20; i++)
+	{
+		printf("Hebra 1 ejecutando\n");
+		sleep(1);
+	}
+}
+
+void *funcion_hebra2 (void *parametros)
+{
+	//while(true)
+	for (int i = 0; i < 20; i++)
+	{
+		printf("Hebra 2 ejecutando\n");
+		sleep(1);	
+	}
+}
 
 /* Our new improved callback. The data passed to this function
 * is printed to stdout. */
@@ -110,6 +190,7 @@ void callback_10( GtkWidget *widget, gpointer data )
 static gboolean timer_event(GtkWidget *widget)
 {
 	g_print ("Saltose el evento del TIMER\n");
+	//bcm2835_pwm_set_data(PWM_CHANNEL, 1024);
 
 	return TRUE; //Si devuelve TRUE, el temporizador volverá a lanzarse, si devuelve FALSE, se detiene.
 }
@@ -127,7 +208,7 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
     width = 100;//gtk_widget_get_allocated_width (widget);
     height = 50;//gtk_widget_get_allocated_height (widget);
     gtk_render_background(context, cr, 0, 0, width, height);
-    cairo_arc (cr, width/2.0, height/2.0, MIN (width, height) / 2.0, 0, 2 * G_PI);
+    cairo_arc (cr, width/2.0, height/2.0, /*MIN (width, height) / 2.0*/10, 0, 2 * G_PI);
     gtk_style_context_get_color (context, gtk_style_context_get_state (context), &color);
     
     color.red = 1;
@@ -154,6 +235,32 @@ gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 int main(int argc, char **argv)
 {
 	if (!bcm2835_init()) return 1;
+
+	/*PWM para el pin 18*/
+	//bcm2835_gpio_fsel(18,BCM2835_GPIO_FSEL_ALT5 );    
+	//bcm2835_gpio_fsel(18,BCM2835_GPIO_FSEL_ALT1 );   
+	
+	/* 
+	bcm2835_gpio_fsel(PIN, BCM2835_GPIO_FSEL_ALT5);
+	bcm2835_pwm_set_clock(BCM2835_PWM_CLOCK_DIVIDER_16);
+    bcm2835_pwm_set_mode(PWM_CHANNEL, 1, 1);
+    bcm2835_pwm_set_range(PWM_CHANNEL, RANGE);
+	*/
+	/*Creamos las hebras*/
+	id_hebra1 = pthread_create(&hebra1, NULL, funcion_hebra1, (void *)&hebra1);
+	
+	if (id_hebra1 != 0)
+	{
+		printf("No se pudo crear hebra 1\n");
+	}
+	
+	id_hebra2 = pthread_create(&hebra2, NULL, funcion_hebra2, (void *)&hebra2);
+
+	if (id_hebra2 != 0)
+	{
+		printf("No se pudo crear hebra 2\n");
+	}
+
 	
 	/*Ponemos el pin 11 como salida*/
 	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_11, BCM2835_GPIO_FSEL_OUTP);
@@ -169,6 +276,7 @@ int main(int argc, char **argv)
 	GtkWidget *box1;	
 	GtkWidget *box2;	
 	GtkWidget *box3;
+	GtkWidget *box4;
 	GtkWidget *hbox;
 		
 	
@@ -280,6 +388,24 @@ int main(int argc, char **argv)
 	//gtk_widget_override_background_color (box3, GTK_STATE_FLAG_NORMAL, &rgba);
 	
 	gtk_main ();
+	
+	//Finalizamos las hebras
+	pthread_join(hebra1, NULL);
+	pthread_join(hebra2, NULL);
+	
+	void* result;	
+    if ((pthread_join(hebra1, &result)) == -1) {
+        perror("No se pudo hacer join a la hebra 1\n");        
+    }
+
+	//void* result;	
+    if ((pthread_join(hebra2, &result)) == -1) {
+        perror("No se pudo hacer join a la hebra 2\n");        
+    }
+	
+	pthread_exit(NULL);
+	
+	bcm2835_close();
 
 	return 0;
 	
