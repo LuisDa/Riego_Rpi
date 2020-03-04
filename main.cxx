@@ -99,7 +99,8 @@ void *funcion_hebra1 (void *parametros)
 	//while(true)
 	for (int i = 0; i < 20; i++)
 	{
-		printf("Hebra 1 ejecutando\n");
+		//printf("Hebra 1 ejecutando\n");
+		g_print ("Hebra 1 ejecutando\n");
 		sleep(1);
 	}
 }
@@ -254,12 +255,14 @@ int main(int argc, char **argv)
 		printf("No se pudo crear hebra 1\n");
 	}
 	
+	/*
 	id_hebra2 = pthread_create(&hebra2, NULL, funcion_hebra2, (void *)&hebra2);
 
 	if (id_hebra2 != 0)
 	{
 		printf("No se pudo crear hebra 2\n");
 	}
+	*/
 
 	
 	/*Ponemos el pin 11 como salida*/
@@ -378,34 +381,48 @@ int main(int argc, char **argv)
 	gtk_box_pack_start(GTK_BOX (box3), drawing_area, FALSE, FALSE, 0);
 	gtk_widget_show (drawing_area);
 	
+	g_print("Creando elementos de la ventana\n");
 	gtk_widget_show (box1);
 	gtk_widget_show (box2);
 	gtk_widget_show (box3);
 	gtk_widget_show (hbox);
 	gtk_widget_show (window);
+	g_print("Ventala creada\n");
 
 	//gdk_rgba_parse(&rgba, "#80FF00");
 	//gtk_widget_override_background_color (box3, GTK_STATE_FLAG_NORMAL, &rgba);
-	
+	g_print("Ejecutando gtk_main()\n");
 	gtk_main ();
+	g_print("Fin ejecución gtk_main()\n");
 	
 	//Finalizamos las hebras
+	g_print("Ejecutando pthread_join a la hebra1\n");
 	pthread_join(hebra1, NULL);
-	pthread_join(hebra2, NULL);
-	
+	g_print("Fin de pthread_join a la hebra1\n");
+	//pthread_join(hebra2, NULL);
+	/*
 	void* result;	
+	
     if ((pthread_join(hebra1, &result)) == -1) {
         perror("No se pudo hacer join a la hebra 1\n");        
     }
+    */
+    
 
 	//void* result;	
+	/*
     if ((pthread_join(hebra2, &result)) == -1) {
         perror("No se pudo hacer join a la hebra 2\n");        
     }
+    */
+    //Al ejecutar esta función, se queda picuet...
+	//g_print("Ejecutando pthread_exit()\n");
+	//pthread_exit(NULL);
+	//g_print("Fin de pthread_exit()\n");
 	
-	pthread_exit(NULL);
-	
+	g_print("Ejecutando bcm2835_close\n");
 	bcm2835_close();
+	g_print("Fin ejecución bcm2835_close\n");
 
 	return 0;
 	
