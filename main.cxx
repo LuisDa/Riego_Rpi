@@ -45,6 +45,9 @@ const int PWM_pin = 1;   /* GPIO 1 as per WiringPi, GPIO18 as per BCM */
 
 unsigned char gpio_status = 0x00; //Byte para controlar el estado de cada salida de GPIO
 
+volatile bool ejecutar_hebra_1 = true;
+volatile bool ejecutar_hebra_2 = true;
+
 //cairo_t *cr = NULL;
 GdkColor color;
 GdkRGBA rgba;
@@ -97,7 +100,8 @@ int id_hebra2;
 void *funcion_hebra1 (void *parametros)
 {
 	//while(true)
-	for (int i = 0; i < 20; i++)
+	//for (int i = 0; i < 20; i++)
+	while(ejecutar_hebra_1)
 	{
 		//printf("Hebra 1 ejecutando\n");
 		g_print ("Hebra 1 ejecutando\n");
@@ -108,7 +112,8 @@ void *funcion_hebra1 (void *parametros)
 void *funcion_hebra2 (void *parametros)
 {
 	//while(true)
-	for (int i = 0; i < 20; i++)
+	//for (int i = 0; i < 20; i++)
+	while(ejecutar_hebra_2)
 	{
 		printf("Hebra 2 ejecutando\n");
 		sleep(1);	
@@ -255,14 +260,14 @@ int main(int argc, char **argv)
 		printf("No se pudo crear hebra 1\n");
 	}
 	
-	/*
+	
 	id_hebra2 = pthread_create(&hebra2, NULL, funcion_hebra2, (void *)&hebra2);
 
 	if (id_hebra2 != 0)
 	{
 		printf("No se pudo crear hebra 2\n");
 	}
-	*/
+	
 
 	
 	/*Ponemos el pin 11 como salida*/
@@ -387,7 +392,7 @@ int main(int argc, char **argv)
 	gtk_widget_show (box3);
 	gtk_widget_show (hbox);
 	gtk_widget_show (window);
-	g_print("Ventala creada\n");
+	g_print("Ventana creada\n");
 
 	//gdk_rgba_parse(&rgba, "#80FF00");
 	//gtk_widget_override_background_color (box3, GTK_STATE_FLAG_NORMAL, &rgba);
@@ -395,11 +400,19 @@ int main(int argc, char **argv)
 	gtk_main ();
 	g_print("Fin ejecución gtk_main()\n");
 	
+	//Indicamos fin de ejecución de ambas hebras
+	ejecutar_hebra_1 = false;
+	ejecutar_hebra_2 = false;
+	
 	//Finalizamos las hebras
 	g_print("Ejecutando pthread_join a la hebra1\n");
 	pthread_join(hebra1, NULL);
 	g_print("Fin de pthread_join a la hebra1\n");
-	//pthread_join(hebra2, NULL);
+	
+	g_print("Ejecutando pthread_join a la hebra2\n");	
+	pthread_join(hebra2, NULL);
+	g_print("Fin de pthread_join a la hebra2\n");
+	
 	/*
 	void* result;	
 	
