@@ -30,6 +30,7 @@
 #include <math.h>
 #include <sys/sem.h>
 #include <pthread.h>
+#include <string.h>
 
 #define PIN RPI_GPIO_P1_12
 
@@ -120,76 +121,20 @@ void *funcion_hebra2 (void *parametros)
 	}
 }
 
-/* Our new improved callback. The data passed to this function
-* is printed to stdout. */
-void callback_1( GtkWidget *widget, gpointer data )
+void callback_botones (GtkWidget *widget, gpointer data )
 {
-	g_print ("Hello again - %s was pressed\n", (gchar *) data);
+	g_print ("Botón %s fue pulsado\n", (gchar*)data);
 	
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_11, HIGH);
-}
-
-void callback_2( GtkWidget *widget, gpointer data )
-{
-	g_print ("Hello again - %s was pressed\n", (gchar *) data);
-	
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_13, HIGH);
-}
-
-void callback_3( GtkWidget *widget, gpointer data )
-{
-	g_print ("Hello again - %s was pressed\n", (gchar *) data);
-	
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_33, HIGH);
-}
-
-void callback_4( GtkWidget *widget, gpointer data )
-{
-	g_print ("Hello again - %s was pressed\n", (gchar *) data);
-	
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_35, HIGH);
-}
-
-void callback_5( GtkWidget *widget, gpointer data )
-{
-	g_print ("Hello again - %s was pressed\n", (gchar *) data);
-	
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_37, HIGH);
-}
-
-void callback_6( GtkWidget *widget, gpointer data )
-{
-	g_print ("Hello again - %s was pressed\n", (gchar *) data);
-	
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_11, LOW);
-}
-
-void callback_7( GtkWidget *widget, gpointer data )
-{
-	g_print ("Hello again - %s was pressed\n", (gchar *) data);
-	
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_13, LOW);
-}
-
-void callback_8( GtkWidget *widget, gpointer data )
-{
-	g_print ("Hello again - %s was pressed\n", (gchar *) data);
-	
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
-}
-
-void callback_9( GtkWidget *widget, gpointer data )
-{
-	g_print ("Hello again - %s was pressed\n", (gchar *) data);
-	
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);
-}
-
-void callback_10( GtkWidget *widget, gpointer data )
-{
-	g_print ("Hello again - %s was pressed\n", (gchar *) data);
-	
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
+	if (strcmp((gchar*)data, "button_1") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_11, HIGH);
+	else if (strcmp((gchar*)data, "button_2") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_13, HIGH);
+	else if (strcmp((gchar*)data, "button_3") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, HIGH);
+	else if (strcmp((gchar*)data, "button_4") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, HIGH);
+	else if (strcmp((gchar*)data, "button_5") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, HIGH);
+	else if (strcmp((gchar*)data, "button_6") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_11, LOW);
+	else if (strcmp((gchar*)data, "button_7") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_13, LOW);
+	else if (strcmp((gchar*)data, "button_8") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
+	else if (strcmp((gchar*)data, "button_9") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);
+	else if (strcmp((gchar*)data, "button_10") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
 }
 
 //Callback para el TIMER
@@ -321,61 +266,71 @@ int main(int argc, char **argv)
 	
 	button = gtk_button_new_with_label ("Button_1");		
 	gtk_widget_set_size_request(button,2,2);	
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_1), (gpointer) "button_1");	
+	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_1), (gpointer) "button_1");	//callback_botones
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_1");
 	gtk_box_pack_start (GTK_BOX(box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
 		
 	button = gtk_button_new_with_label ("Button_2");
 	gtk_widget_set_size_request(button,2,2);	
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_2), (gpointer) "button_2");
+	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_2), (gpointer) "button_2");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_2");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
 
 	button = gtk_button_new_with_label ("Button_3");
 	gtk_widget_set_size_request(button,2,2);	
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_3), (gpointer) "button_3");
+	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_3), (gpointer) "button_3");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_3");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);	
 
 	button = gtk_button_new_with_label ("Button_4");
 	gtk_widget_set_size_request(button,2,2);	
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_4), (gpointer) "button_4");
+	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_4), (gpointer) "button_4");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_4");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);	
 	
 	button = gtk_button_new_with_label ("Button_5");
 	gtk_widget_set_size_request(button,2,2);	
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_5), (gpointer) "button_5");
+	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_5), (gpointer) "button_5");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_5");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);	
 	
 	button = gtk_button_new_with_label ("Button_6");
 	gtk_widget_set_size_request(button,2,2);
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_6), (gpointer) "button_6");
+	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_6), (gpointer) "button_6");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_6");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
 	
 	button = gtk_button_new_with_label ("Button_7");
 	gtk_widget_set_size_request(button,2,2);
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_7), (gpointer) "button_7");
+	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_7), (gpointer) "button_7");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_7");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
 	gtk_widget_show (button);
 
 	button = gtk_button_new_with_label ("Button_8");
 	gtk_widget_set_size_request(button,2,2);
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_8), (gpointer) "button_8");
+	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_8), (gpointer) "button_8");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_8");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
 	gtk_widget_show (button);
 	
 	button = gtk_button_new_with_label ("Button_9");
 	gtk_widget_set_size_request(button,2,2);
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_9), (gpointer) "button_9");
+	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_9), (gpointer) "button_9");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_9");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
 	gtk_widget_show (button);
 	
 	button = gtk_button_new_with_label ("Button_10");
 	gtk_widget_set_size_request(button,2,2);
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_10), (gpointer) "button_10");
+	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_10), (gpointer) "button_10");
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_10");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
 	gtk_widget_show (button);
 	
