@@ -49,6 +49,9 @@ unsigned char gpio_status = 0x00; //Byte para controlar el estado de cada salida
 volatile bool ejecutar_hebra_1 = true;
 volatile bool ejecutar_hebra_2 = true;
 
+const char* etiquetas_botones[10] = {"Button_1", "Button_2", "Button_3", "Button_4", "Button_5", "Button_6", "Button_7", "Button_8", "Button_9", "Button_10"};
+const char* id_botones[10] = {"button_1", "button_2", "button_3", "button_4", "button_5", "button_6", "button_7", "button_8", "button_9", "button_10"};
+
 //cairo_t *cr = NULL;
 GdkColor color;
 GdkRGBA rgba;
@@ -91,6 +94,17 @@ static int semaphore1_release_access(void)
 	}
 	return(1);	
 }
+
+//Declaración de funciones
+void inicializar_GUI(void);
+
+static gboolean timer_event(GtkWidget *widget);
+
+gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data);
+
+gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data);
+
+void inicializar_GPIO(void);
 
 //Hebras
 pthread_t hebra1;
@@ -135,6 +149,143 @@ void callback_botones (GtkWidget *widget, gpointer data )
 	else if (strcmp((gchar*)data, "button_8") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
 	else if (strcmp((gchar*)data, "button_9") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);
 	else if (strcmp((gchar*)data, "button_10") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
+}
+
+void inicializar_GPIO(void)
+{
+	if (!bcm2835_init()) 
+	{	
+		printf("Error al ejecutar bcm2835_init()\n");
+		exit(1);
+	}
+	
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_11, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_13, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_33, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_35, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_37, BCM2835_GPIO_FSEL_OUTP);	
+}
+
+void inicializar_GUI(void)
+{
+		/* GtkWidget is the storage type for widgets */
+	GtkWidget *window;
+	GtkWidget *button;
+	GtkWidget *drawing_area;
+	GtkWidget *box1;	
+	GtkWidget *box2;	
+	GtkWidget *box3;
+	GtkWidget *box4;
+	GtkWidget *hbox;
+		
+	
+	/* This is called in all GTK applications. Arguments are parsed
+	* from the command line and are returned to the application. */
+	//gtk_init (&argc, &argv);
+	/* Create a new window */
+	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);	
+	gtk_window_set_title (GTK_WINDOW (window), "GÜINDOU");
+	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);		//Size of the the client area (excluding the additional areas provided by the window manager)
+	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+		
+	g_timeout_add(1000, (GSourceFunc) timer_event, (gpointer) window); //Configuramos el temporizador para que genere un evento cada segundo (1000 ms)
+	
+	g_signal_connect (G_OBJECT (window), "delete_event", G_CALLBACK (delete_event), NULL);	
+	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
+	
+	/* We create a box to pack widgets into. This is described in detail
+	* in the "packing" section. The box is not really visible, it
+	* is just used as a tool to arrange widgets. */
+	//hbox = gtk_hbox_new (FALSE, 8);	
+	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
+	//box1 = gtk_vbox_new (FALSE, 5);
+	box1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+	//box2 = gtk_vbox_new (FALSE, 5);
+	box2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+	
+	box3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+
+	gtk_container_add (GTK_CONTAINER (window), hbox);
+	gtk_box_pack_start(GTK_BOX(hbox), box1, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), box2, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), box3, FALSE, FALSE, 0);
+	
+
+	button = gtk_button_new_with_label ("Button_1");		
+	gtk_widget_set_size_request(button,2,2);		
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_1");
+	gtk_box_pack_start (GTK_BOX(box1), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);
+		
+	button = gtk_button_new_with_label ("Button_2");
+	gtk_widget_set_size_request(button,2,2);		
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_2");
+	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);
+
+	button = gtk_button_new_with_label ("Button_3");
+	gtk_widget_set_size_request(button,2,2);		
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_3");
+	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);	
+
+	button = gtk_button_new_with_label ("Button_4");
+	gtk_widget_set_size_request(button,2,2);		
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_4");
+	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);	
+	
+	button = gtk_button_new_with_label ("Button_5");
+	gtk_widget_set_size_request(button,2,2);		
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_5");
+	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);	
+	
+	
+	button = gtk_button_new_with_label ("Button_6");
+	gtk_widget_set_size_request(button,2,2);	
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_6");
+	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);
+	
+	button = gtk_button_new_with_label ("Button_7");
+	gtk_widget_set_size_request(button,2,2);	
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_7");
+	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
+	gtk_widget_show (button);
+
+	button = gtk_button_new_with_label ("Button_8");
+	gtk_widget_set_size_request(button,2,2);	
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_8");
+	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
+	gtk_widget_show (button);
+	
+	button = gtk_button_new_with_label ("Button_9");
+	gtk_widget_set_size_request(button,2,2);	
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_9");
+	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
+	gtk_widget_show (button);
+	
+	button = gtk_button_new_with_label ("Button_10");
+	gtk_widget_set_size_request(button,2,2);	
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_10");
+	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
+	gtk_widget_show (button);
+	
+	drawing_area = gtk_drawing_area_new(); 	   
+    //gtk_container_add (GTK_CONTAINER (box3), drawing_area);
+    gtk_widget_set_size_request (drawing_area, 100, 50);    
+	g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
+	gtk_box_pack_start(GTK_BOX (box3), drawing_area, FALSE, FALSE, 0);
+	gtk_widget_show (drawing_area);
+	
+	g_print("Creando elementos de la ventana\n");
+	gtk_widget_show (box1);
+	gtk_widget_show (box2);
+	gtk_widget_show (box3);
+	gtk_widget_show (hbox);
+	gtk_widget_show (window);
+	g_print("Ventana creada\n");
 }
 
 //Callback para el TIMER
@@ -185,169 +336,18 @@ gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 	//---------------------------------
 int main(int argc, char **argv)
 {
-	if (!bcm2835_init()) return 1;
 
-	/*PWM para el pin 18*/
-	//bcm2835_gpio_fsel(18,BCM2835_GPIO_FSEL_ALT5 );    
-	//bcm2835_gpio_fsel(18,BCM2835_GPIO_FSEL_ALT1 );   
-	
-	/* 
-	bcm2835_gpio_fsel(PIN, BCM2835_GPIO_FSEL_ALT5);
-	bcm2835_pwm_set_clock(BCM2835_PWM_CLOCK_DIVIDER_16);
-    bcm2835_pwm_set_mode(PWM_CHANNEL, 1, 1);
-    bcm2835_pwm_set_range(PWM_CHANNEL, RANGE);
-	*/
 	/*Creamos las hebras*/
-	id_hebra1 = pthread_create(&hebra1, NULL, funcion_hebra1, (void *)&hebra1);
-	
-	if (id_hebra1 != 0)
-	{
-		printf("No se pudo crear hebra 1\n");
-	}
-	
-	
-	id_hebra2 = pthread_create(&hebra2, NULL, funcion_hebra2, (void *)&hebra2);
+	if (pthread_create(&hebra1, NULL, funcion_hebra1, (void *)&hebra1) != 0) printf("No se pudo crear hebra_1\n");
+	if (pthread_create(&hebra2, NULL, funcion_hebra2, (void *)&hebra2) != 0) printf("No se pudo crear hebra_2\n");
 
-	if (id_hebra2 != 0)
-	{
-		printf("No se pudo crear hebra 2\n");
-	}
+	/*Inicializamos GPIO*/	
+	inicializar_GPIO();	
 	
-
-	
-	/*Ponemos el pin 11 como salida*/
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_11, BCM2835_GPIO_FSEL_OUTP);
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_13, BCM2835_GPIO_FSEL_OUTP);
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_33, BCM2835_GPIO_FSEL_OUTP);
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_35, BCM2835_GPIO_FSEL_OUTP);
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_37, BCM2835_GPIO_FSEL_OUTP);
-	
-	/* GtkWidget is the storage type for widgets */
-	GtkWidget *window;
-	GtkWidget *button;
-	GtkWidget *drawing_area;
-	GtkWidget *box1;	
-	GtkWidget *box2;	
-	GtkWidget *box3;
-	GtkWidget *box4;
-	GtkWidget *hbox;
-		
-	
-	/* This is called in all GTK applications. Arguments are parsed
-	* from the command line and are returned to the application. */
+	/* Inicializamos GTK */
 	gtk_init (&argc, &argv);
-	/* Create a new window */
-	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);	
-	gtk_window_set_title (GTK_WINDOW (window), "GÜINDOU");
-	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);		//Size of the the client area (excluding the additional areas provided by the window manager)
-	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-		
-	g_timeout_add(1000, (GSourceFunc) timer_event, (gpointer) window); //Configuramos el temporizador para que genere un evento cada segundo (1000 ms)
-	
-	g_signal_connect (G_OBJECT (window), "delete_event", G_CALLBACK (delete_event), NULL);	
-	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
-	
-	/* We create a box to pack widgets into. This is described in detail
-	* in the "packing" section. The box is not really visible, it
-	* is just used as a tool to arrange widgets. */
-	//hbox = gtk_hbox_new (FALSE, 8);	
-	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
-	//box1 = gtk_vbox_new (FALSE, 5);
-	box1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-	//box2 = gtk_vbox_new (FALSE, 5);
-	box2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-	
-	box3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+	inicializar_GUI();
 
-	gtk_container_add (GTK_CONTAINER (window), hbox);
-	gtk_box_pack_start(GTK_BOX(hbox), box1, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox), box2, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox), box3, FALSE, FALSE, 0);
-	
-	button = gtk_button_new_with_label ("Button_1");		
-	gtk_widget_set_size_request(button,2,2);	
-	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_1), (gpointer) "button_1");	//callback_botones
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_1");
-	gtk_box_pack_start (GTK_BOX(box1), button, FALSE, FALSE, 0);
-	gtk_widget_show (button);
-		
-	button = gtk_button_new_with_label ("Button_2");
-	gtk_widget_set_size_request(button,2,2);	
-	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_2), (gpointer) "button_2");
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_2");
-	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
-	gtk_widget_show (button);
-
-	button = gtk_button_new_with_label ("Button_3");
-	gtk_widget_set_size_request(button,2,2);	
-	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_3), (gpointer) "button_3");
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_3");
-	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
-	gtk_widget_show (button);	
-
-	button = gtk_button_new_with_label ("Button_4");
-	gtk_widget_set_size_request(button,2,2);	
-	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_4), (gpointer) "button_4");
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_4");
-	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
-	gtk_widget_show (button);	
-	
-	button = gtk_button_new_with_label ("Button_5");
-	gtk_widget_set_size_request(button,2,2);	
-	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_5), (gpointer) "button_5");
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_5");
-	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
-	gtk_widget_show (button);	
-	
-	button = gtk_button_new_with_label ("Button_6");
-	gtk_widget_set_size_request(button,2,2);
-	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_6), (gpointer) "button_6");
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_6");
-	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);
-	gtk_widget_show (button);
-	
-	button = gtk_button_new_with_label ("Button_7");
-	gtk_widget_set_size_request(button,2,2);
-	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_7), (gpointer) "button_7");
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_7");
-	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
-	gtk_widget_show (button);
-
-	button = gtk_button_new_with_label ("Button_8");
-	gtk_widget_set_size_request(button,2,2);
-	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_8), (gpointer) "button_8");
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_8");
-	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
-	gtk_widget_show (button);
-	
-	button = gtk_button_new_with_label ("Button_9");
-	gtk_widget_set_size_request(button,2,2);
-	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_9), (gpointer) "button_9");
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_9");
-	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
-	gtk_widget_show (button);
-	
-	button = gtk_button_new_with_label ("Button_10");
-	gtk_widget_set_size_request(button,2,2);
-	//g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_10), (gpointer) "button_10");
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_10");
-	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
-	gtk_widget_show (button);
-	
-	drawing_area = gtk_drawing_area_new(); 	   
-    //gtk_container_add (GTK_CONTAINER (box3), drawing_area);
-    gtk_widget_set_size_request (drawing_area, 100, 50);    
-	g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
-	gtk_box_pack_start(GTK_BOX (box3), drawing_area, FALSE, FALSE, 0);
-	gtk_widget_show (drawing_area);
-	
-	g_print("Creando elementos de la ventana\n");
-	gtk_widget_show (box1);
-	gtk_widget_show (box2);
-	gtk_widget_show (box3);
-	gtk_widget_show (hbox);
-	gtk_widget_show (window);
-	g_print("Ventana creada\n");
 
 	//gdk_rgba_parse(&rgba, "#80FF00");
 	//gtk_widget_override_background_color (box3, GTK_STATE_FLAG_NORMAL, &rgba);
@@ -367,26 +367,7 @@ int main(int argc, char **argv)
 	g_print("Ejecutando pthread_join a la hebra2\n");	
 	pthread_join(hebra2, NULL);
 	g_print("Fin de pthread_join a la hebra2\n");
-	
-	/*
-	void* result;	
-	
-    if ((pthread_join(hebra1, &result)) == -1) {
-        perror("No se pudo hacer join a la hebra 1\n");        
-    }
-    */
-    
 
-	//void* result;	
-	/*
-    if ((pthread_join(hebra2, &result)) == -1) {
-        perror("No se pudo hacer join a la hebra 2\n");        
-    }
-    */
-    //Al ejecutar esta función, se queda picuet...
-	//g_print("Ejecutando pthread_exit()\n");
-	//pthread_exit(NULL);
-	//g_print("Fin de pthread_exit()\n");
 	
 	g_print("Ejecutando bcm2835_close\n");
 	bcm2835_close();
