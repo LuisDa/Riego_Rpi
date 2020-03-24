@@ -49,8 +49,19 @@ unsigned char gpio_status = 0x00; //Byte para controlar el estado de cada salida
 volatile bool ejecutar_hebra_1 = true;
 volatile bool ejecutar_hebra_2 = true;
 
+volatile bool conmutar_color = false;
+
 const char* etiquetas_botones[10] = {"Button_1", "Button_2", "Button_3", "Button_4", "Button_5", "Button_6", "Button_7", "Button_8", "Button_9", "Button_10"};
 const char* id_botones[10] = {"button_1", "button_2", "button_3", "button_4", "button_5", "button_6", "button_7", "button_8", "button_9", "button_10"};
+
+GtkWidget *window;
+GtkWidget *button;
+GtkWidget *drawing_area;
+GtkWidget *box1;	
+GtkWidget *box2;	
+GtkWidget *box3;
+GtkWidget *box4;
+GtkWidget *hbox;
 
 //cairo_t *cr = NULL;
 GdkColor color;
@@ -149,6 +160,23 @@ void callback_botones (GtkWidget *widget, gpointer data )
 	else if (strcmp((gchar*)data, "button_8") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
 	else if (strcmp((gchar*)data, "button_9") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);
 	else if (strcmp((gchar*)data, "button_10") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
+	
+	if (strcmp((gchar*)data, "button_2") == 0)
+	{
+		conmutar_color = true;
+		gtk_widget_queue_draw(drawing_area);
+		//g_signal_emit((gpointer)"draw");
+		//gtk_signal_emit_by_name(window, "draw");
+		
+		//            g_signal_emit (G_OBJECT (puzzle), puzzle_signals [PUZZLE_SOLVED_SIGNAL], 0);
+		/*
+		  puzzle_signals[PUZZLE_SOLVED_SIGNAL] =
+      g_signal_new ("puzzle_solved",
+                    G_TYPE_FROM_CLASS (gobject_class),
+                    G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
+                    g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0, NULL);*/
+	}
+	
 }
 
 void inicializar_GPIO(void)
@@ -169,6 +197,7 @@ void inicializar_GPIO(void)
 void inicializar_GUI(void)
 {
 		/* GtkWidget is the storage type for widgets */
+		/*
 	GtkWidget *window;
 	GtkWidget *button;
 	GtkWidget *drawing_area;
@@ -176,7 +205,7 @@ void inicializar_GUI(void)
 	GtkWidget *box2;	
 	GtkWidget *box3;
 	GtkWidget *box4;
-	GtkWidget *hbox;
+	GtkWidget *hbox;*/
 		
 	
 	/* This is called in all GTK applications. Arguments are parsed
@@ -196,11 +225,11 @@ void inicializar_GUI(void)
 	/* We create a box to pack widgets into. This is described in detail
 	* in the "packing" section. The box is not really visible, it
 	* is just used as a tool to arrange widgets. */
-	//hbox = gtk_hbox_new (FALSE, 8);	
+	
 	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
-	//box1 = gtk_vbox_new (FALSE, 5);
+	
 	box1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-	//box2 = gtk_vbox_new (FALSE, 5);
+	
 	box2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 	
 	box3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
@@ -313,10 +342,21 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
     cairo_arc (cr, width/2.0, height/2.0, /*MIN (width, height) / 2.0*/10, 0, 2 * G_PI);
     gtk_style_context_get_color (context, gtk_style_context_get_state (context), &color);
     
-    color.red = 1;
-    color.green = 0.4;
-    color.blue = 0;
-    color.alpha = 1;
+    if (conmutar_color)
+    {
+		color.red = 0.1;
+		color.green = 0.8;
+		color.blue = 1;
+		color.alpha = 1;
+		conmutar_color = false;
+	}
+	else
+    {
+		color.red = 1;
+		color.green = 0.4;
+		color.blue = 0;
+		color.alpha = 1;
+	}
     
     gdk_cairo_set_source_rgba (cr, &color);
     gdk_cairo_set_source_rgba (cr, &color);
