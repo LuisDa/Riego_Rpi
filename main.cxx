@@ -57,11 +57,17 @@ const char* id_botones[10] = {"button_1", "button_2", "button_3", "button_4", "b
 GtkWidget *window;
 GtkWidget *button;
 GtkWidget *drawing_area;
+GtkWidget *list_box;
+//GtkListBox *lista;
+GtkComboBox *cbox_quaity;
+GtkListBox *gtk_list_box;
 GtkWidget *box1;	
 GtkWidget *box2;	
 GtkWidget *box3;
 GtkWidget *box4;
 GtkWidget *hbox;
+
+#define MAX_WORD_SIZE 32
 
 //cairo_t *cr = NULL;
 GdkColor color;
@@ -195,18 +201,7 @@ void inicializar_GPIO(void)
 }
 
 void inicializar_GUI(void)
-{
-		/* GtkWidget is the storage type for widgets */
-		/*
-	GtkWidget *window;
-	GtkWidget *button;
-	GtkWidget *drawing_area;
-	GtkWidget *box1;	
-	GtkWidget *box2;	
-	GtkWidget *box3;
-	GtkWidget *box4;
-	GtkWidget *hbox;*/
-		
+{		
 	
 	/* This is called in all GTK applications. Arguments are parsed
 	* from the command line and are returned to the application. */
@@ -233,11 +228,14 @@ void inicializar_GUI(void)
 	box2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 	
 	box3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+	
+	box4 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 
 	gtk_container_add (GTK_CONTAINER (window), hbox);
 	gtk_box_pack_start(GTK_BOX(hbox), box1, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), box2, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), box3, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), box4, FALSE, FALSE, 0);
 	
 
 	button = gtk_button_new_with_label ("Button_1");		
@@ -308,10 +306,37 @@ void inicializar_GUI(void)
 	gtk_box_pack_start(GTK_BOX (box3), drawing_area, FALSE, FALSE, 0);
 	gtk_widget_show (drawing_area);
 	
+	//list_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
+	list_box = gtk_list_box_new();	
+	gtk_list_box = (GtkListBox*)list_box;	
+	gtk_widget_set_size_request (list_box, 100, 300);
+	gtk_box_pack_start(GTK_BOX (box4), list_box, FALSE, FALSE, 0);
+	gtk_widget_show(list_box);
+	
+	GtkWidget *etiqueta;
+	etiqueta = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(etiqueta), "<span foreground=\"red\" size=\"x-large\">Los chuches</span>");
+	gtk_label_set_justify(GTK_LABEL(etiqueta), GTK_JUSTIFY_CENTER);
+	gtk_list_box_insert(gtk_list_box, etiqueta, 1);
+	gtk_widget_show(etiqueta);
+	
+	
+	/*
+	list_box = (GtkListBox*)gtk_list_box_new();
+	gtk_list_box_insert(list_box, (GtkWidget*)"Elemento 1", 1);
+	gtk_list_box_insert(list_box, (GtkWidget*)"Elemento 2", 2);
+	gtk_list_box_insert(list_box, (GtkWidget*)"Elemento 3", 3);
+	gtk_widget_set_size_request ((GtkWidget*)list_box, 100, 300);
+	gtk_box_pack_start(GTK_BOX (box4), (GtkWidget*)list_box, FALSE, FALSE, 0);
+	gtk_widget_show ((GtkWidget*)list_box);
+	*/ 
+	
+	
 	g_print("Creando elementos de la ventana\n");
 	gtk_widget_show (box1);
 	gtk_widget_show (box2);
 	gtk_widget_show (box3);
+	gtk_widget_show (box4);
 	gtk_widget_show (hbox);
 	gtk_widget_show (window);
 	g_print("Ventana creada\n");
