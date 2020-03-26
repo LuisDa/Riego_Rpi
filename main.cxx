@@ -121,6 +121,8 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data);
 
 gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data);
 
+void selected_event_callback (GtkListBox *list_box, GtkListBoxRow *row, gpointer data);
+
 void inicializar_GPIO(void);
 
 //Hebras
@@ -308,14 +310,15 @@ void inicializar_GUI(void)
 	
 	//list_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	list_box = gtk_list_box_new();	
-	gtk_list_box = (GtkListBox*)list_box;	
+	gtk_list_box = (GtkListBox*)list_box;
+	g_signal_connect (G_OBJECT (gtk_list_box), "row-selected", G_CALLBACK (selected_event_callback), NULL);
 	gtk_widget_set_size_request (list_box, 100, 300);
 	gtk_box_pack_start(GTK_BOX (box4), list_box, FALSE, FALSE, 0);
 	gtk_widget_show(list_box);
 	
 	GtkWidget *etiqueta;
 	etiqueta = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(etiqueta), "<span foreground=\"red\" size=\"x-large\">Los chuches</span>");
+	gtk_label_set_markup(GTK_LABEL(etiqueta), "<span foreground=\"black\" size=\"x-small\">Los chuches</span>");
 	gtk_label_set_justify(GTK_LABEL(etiqueta), GTK_JUSTIFY_CENTER);
 	gtk_list_box_insert(gtk_list_box, etiqueta, 1);
 	gtk_widget_show(etiqueta);
@@ -388,6 +391,12 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
     cairo_fill (cr);
     return FALSE;
 }
+
+void selected_event_callback (GtkListBox *list_box, GtkListBoxRow *row, gpointer data)
+{
+	g_print("Seleccionada línea en lista, gafas\n");
+}
+
 
 /* another callback */
 gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
