@@ -61,11 +61,16 @@ GtkWidget *list_box;
 //GtkListBox *lista;
 GtkComboBox *cbox_quaity;
 GtkListBox *gtk_list_box;
+
+GtkWidget *window_programa;
+
 GtkWidget *box1;	
 GtkWidget *box2;	
 GtkWidget *box3;
 GtkWidget *box4;
+GtkWidget *box5;
 GtkWidget *hbox;
+
 
 #define MAX_WORD_SIZE 32
 
@@ -168,6 +173,7 @@ void callback_botones (GtkWidget *widget, gpointer data )
 	else if (strcmp((gchar*)data, "button_8") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
 	else if (strcmp((gchar*)data, "button_9") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);
 	else if (strcmp((gchar*)data, "button_10") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
+	else if (strcmp((gchar*)data, "edit_programa") == 0) gtk_widget_show (window_programa);
 	
 	if (strcmp((gchar*)data, "button_2") == 0)
 	{
@@ -219,6 +225,13 @@ void inicializar_GUI(void)
 	g_signal_connect (G_OBJECT (window), "delete_event", G_CALLBACK (delete_event), NULL);	
 	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 	
+	window_programa = gtk_window_new (GTK_WINDOW_TOPLEVEL);	
+	gtk_window_set_title (GTK_WINDOW (window_programa), "Editar programa de riego");
+	gtk_window_set_default_size(GTK_WINDOW(window_programa), 400, 200);		//Size of the the client area (excluding the additional areas provided by the window manager)
+	gtk_window_set_position(GTK_WINDOW(window_programa), GTK_WIN_POS_CENTER);
+	g_signal_connect(G_OBJECT (window_programa), "delete_event", G_CALLBACK (delete_event), NULL);
+
+	
 	/* We create a box to pack widgets into. This is described in detail
 	* in the "packing" section. The box is not really visible, it
 	* is just used as a tool to arrange widgets. */
@@ -232,12 +245,15 @@ void inicializar_GUI(void)
 	box3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 	
 	box4 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+	
+	box5 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 
 	gtk_container_add (GTK_CONTAINER (window), hbox);
 	gtk_box_pack_start(GTK_BOX(hbox), box1, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), box2, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), box3, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), box4, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), box5, FALSE, FALSE, 0);
 	
 
 	button = gtk_button_new_with_label ("Button_1");		
@@ -323,6 +339,11 @@ void inicializar_GUI(void)
 	gtk_list_box_insert(gtk_list_box, etiqueta, 1);
 	gtk_widget_show(etiqueta);
 	
+	button = gtk_button_new_with_label ("Editar Programa");
+	gtk_widget_set_size_request(button,2,2);
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "edit_programa");
+	gtk_box_pack_start(GTK_BOX (box5), button, FALSE, FALSE, 0);
+	gtk_widget_show (button);
 	
 	/*
 	list_box = (GtkListBox*)gtk_list_box_new();
@@ -340,6 +361,7 @@ void inicializar_GUI(void)
 	gtk_widget_show (box2);
 	gtk_widget_show (box3);
 	gtk_widget_show (box4);
+	gtk_widget_show (box5);
 	gtk_widget_show (hbox);
 	gtk_widget_show (window);
 	g_print("Ventana creada\n");
@@ -401,8 +423,12 @@ void selected_event_callback (GtkListBox *list_box, GtkListBoxRow *row, gpointer
 /* another callback */
 gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 {
-	gtk_main_quit ();
-	return FALSE;
+	if (widget == window)
+	{	
+		gtk_main_quit ();
+	}
+	
+	return FALSE;		
 }
 
 	//---------------------------------
