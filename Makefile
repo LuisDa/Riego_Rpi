@@ -6,7 +6,7 @@
 OBJ = main.o
 
 #Set any dependant header files so that if they are edited they cause a complete re-compile (e.g. main.h some_subfunctions.h some_definitions_file.h ), or leave blank
-#DEPS = main.cxx
+DEPS = ProgramaRiegoDlg.h
 
 #Any special libraries you are using in your project (e.g. -lbcm2835 -lrt `pkg-config --libs gtk+-3.0` ), or leave blank
 LIBS = -lbcm2835 -lpthread `pkg-config --libs gtk+-3.0`

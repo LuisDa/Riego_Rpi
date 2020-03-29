@@ -31,6 +31,7 @@
 #include <sys/sem.h>
 #include <pthread.h>
 #include <string.h>
+#include "ProgramaRiegoDlg.h"
 
 #define PIN RPI_GPIO_P1_12
 
@@ -63,6 +64,7 @@ GtkComboBox *cbox_quaity;
 GtkListBox *gtk_list_box;
 
 GtkWidget *window_programa;
+CProgramaRiegoDlg *ventana_programa = NULL;
 
 GtkWidget *box1;	
 GtkWidget *box2;	
@@ -173,7 +175,12 @@ void callback_botones (GtkWidget *widget, gpointer data )
 	else if (strcmp((gchar*)data, "button_8") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
 	else if (strcmp((gchar*)data, "button_9") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);
 	else if (strcmp((gchar*)data, "button_10") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
-	else if (strcmp((gchar*)data, "edit_programa") == 0) gtk_widget_show (window_programa);
+	else if (strcmp((gchar*)data, "edit_programa") == 0)
+	{
+		ventana_programa = new CProgramaRiegoDlg("Editar programa de riego");
+		ventana_programa->mostrar_ventana();		
+	}
+	//else if (strcmp((gchar*)data, "edit_programa") == 0) gtk_widget_show (window_programa);
 	
 	if (strcmp((gchar*)data, "button_2") == 0)
 	{
@@ -334,7 +341,7 @@ void inicializar_GUI(void)
 	
 	GtkWidget *etiqueta;
 	etiqueta = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(etiqueta), "<span foreground=\"black\" size=\"x-small\">Los chuches</span>");
+	gtk_label_set_markup(GTK_LABEL(etiqueta), "<span foreground=\"black\" size=\"x-small\">Programa 1</span>");
 	gtk_label_set_justify(GTK_LABEL(etiqueta), GTK_JUSTIFY_CENTER);
 	gtk_list_box_insert(gtk_list_box, etiqueta, 1);
 	gtk_widget_show(etiqueta);
