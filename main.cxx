@@ -55,6 +55,9 @@ volatile bool conmutar_color = false;
 const char* etiquetas_botones[10] = {"Button_1", "Button_2", "Button_3", "Button_4", "Button_5", "Button_6", "Button_7", "Button_8", "Button_9", "Button_10"};
 const char* id_botones[10] = {"button_1", "button_2", "button_3", "button_4", "button_5", "button_6", "button_7", "button_8", "button_9", "button_10"};
 
+//Títulos
+const char* titulo_ventana_prog_riego = "Editar programa de riego";
+
 GtkWidget *window;
 GtkWidget *button;
 GtkWidget *drawing_area;
@@ -121,6 +124,7 @@ static int semaphore1_release_access(void)
 
 //Declaración de funciones
 void inicializar_GUI(void);
+void finalizar_GUI(void);
 
 static gboolean timer_event(GtkWidget *widget);
 
@@ -177,7 +181,7 @@ void callback_botones (GtkWidget *widget, gpointer data )
 	else if (strcmp((gchar*)data, "button_10") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
 	else if (strcmp((gchar*)data, "edit_programa") == 0)
 	{
-		ventana_programa = new CProgramaRiegoDlg("Editar programa de riego");
+		ventana_programa = new CProgramaRiegoDlg(titulo_ventana_prog_riego);
 		ventana_programa->mostrar_ventana();		
 	}
 	//else if (strcmp((gchar*)data, "edit_programa") == 0) gtk_widget_show (window_programa);
@@ -374,6 +378,38 @@ void inicializar_GUI(void)
 	g_print("Ventana creada\n");
 }
 
+void finalizar_GUI(void)
+{
+	delete button;
+	button = NULL;
+	
+	delete list_box;
+	list_box = NULL;
+
+	delete gtk_list_box;
+	gtk_list_box = NULL;
+	
+	delete drawing_area;
+	drawing_area = NULL;
+	
+	delete box1; 
+	box1 = NULL;
+	
+	delete box2; 
+	box2 = NULL;
+	
+	delete box3; 
+	box3 = NULL;
+	
+	delete box4; 
+	box4 = NULL;		
+	
+	delete box5; 
+	box5 = NULL;
+	
+		
+}
+
 //Callback para el TIMER
 static gboolean timer_event(GtkWidget *widget)
 {
@@ -432,7 +468,8 @@ gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 {
 	if (widget == window)
 	{	
-		gtk_main_quit ();
+		//finalizar_GUI();
+		gtk_main_quit ();		
 	}
 	
 	return FALSE;		
@@ -461,6 +498,8 @@ int main(int argc, char **argv)
 	g_print("Ejecutando gtk_main()\n");
 	gtk_main ();
 	g_print("Fin ejecución gtk_main()\n");
+	
+	//finalizar_GUI();
 	
 	//Indicamos fin de ejecución de ambas hebras
 	ejecutar_hebra_1 = false;
