@@ -24,6 +24,18 @@ class CProgramaRiegoDlg
 		GtkWidget *m_etiquetaDuracionValv2;
 		GtkWidget *m_etiquetaDuracionValv3;
 		GtkWidget *m_etiquetaDuracionValv4;
+		
+		GtkWidget *m_campoHoraInicio;
+		GtkWidget *m_campoDuracionValv1;
+		GtkWidget *m_campoDuracionValv2;
+		GtkWidget *m_campoDuracionValv3;
+		GtkWidget *m_campoDuracionValv4;
+		
+		GtkTextBuffer *m_buffHoraInicio;
+		GtkTextBuffer *m_buffDuracionValv1;		
+		GtkTextBuffer *m_buffDuracionValv2;
+		GtkTextBuffer *m_buffDuracionValv3;
+		GtkTextBuffer *m_buffDuracionValv4;
 	
 };
 #endif 
