@@ -2,6 +2,8 @@
 
 CProgramaRiegoDlg::CProgramaRiegoDlg(const gchar* titulo)
 {
+	//m_repositorio = new CRepositorio();
+	
 	m_hboxVentana = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
 	m_vboxEtiquetas = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 	m_vboxCampos = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);

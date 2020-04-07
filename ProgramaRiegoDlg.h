@@ -2,6 +2,7 @@
 #define PROGRAMA_RIEGO_DLG_H
 
 #include <gtk/gtk.h>
+#include "Repositorio.h"
 
 class CProgramaRiegoDlg
 {
@@ -10,9 +11,12 @@ class CProgramaRiegoDlg
 		~CProgramaRiegoDlg();
 		gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data );
 		void mostrar_ventana();
+		void setRepositorio(CRepositorio *repos) {m_repositorio = repos;}
 		
 		
 	private:
+		CRepositorio *m_repositorio;
+	
 		GtkWidget *m_ventana;
 		
 		GtkWidget *m_hboxVentana;

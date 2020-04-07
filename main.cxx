@@ -58,6 +58,9 @@ const char* id_botones[10] = {"button_1", "button_2", "button_3", "button_4", "b
 //Títulos
 const char* titulo_ventana_prog_riego = "Editar programa de riego";
 
+//Repositorio
+CRepositorio *repositorio = 0;
+
 GtkWidget *window;
 GtkWidget *button;
 GtkWidget *drawing_area;
@@ -181,7 +184,12 @@ void callback_botones (GtkWidget *widget, gpointer data )
 	else if (strcmp((gchar*)data, "button_10") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
 	else if (strcmp((gchar*)data, "edit_programa") == 0)
 	{
-		ventana_programa = new CProgramaRiegoDlg(titulo_ventana_prog_riego);
+		char titulo[28];
+		sprintf(titulo, "Editar programa de riego %d", repositorio->getIdProgramaSeleccionado());
+		titulo[27] = 0;
+		//ventana_programa = new CProgramaRiegoDlg(titulo_ventana_prog_riego);
+		ventana_programa = new CProgramaRiegoDlg(titulo);
+		ventana_programa->setRepositorio(repositorio);
 		ventana_programa->mostrar_ventana();		
 	}
 	//else if (strcmp((gchar*)data, "edit_programa") == 0) gtk_widget_show (window_programa);
@@ -236,7 +244,8 @@ void inicializar_GUI(void)
 	g_signal_connect (G_OBJECT (window), "delete_event", G_CALLBACK (delete_event), NULL);	
 	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 	
-	window_programa = gtk_window_new (GTK_WINDOW_TOPLEVEL);	
+	window_programa = gtk_window_new (GTK_WINDOW_TOPLEVEL);		
+	//titulo[26] = 0;
 	gtk_window_set_title (GTK_WINDOW (window_programa), "Editar programa de riego");
 	gtk_window_set_default_size(GTK_WINDOW(window_programa), 400, 200);		//Size of the the client area (excluding the additional areas provided by the window manager)
 	gtk_window_set_position(GTK_WINDOW(window_programa), GTK_WIN_POS_CENTER);
@@ -347,7 +356,19 @@ void inicializar_GUI(void)
 	etiqueta = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(etiqueta), "<span foreground=\"black\" size=\"x-small\">Programa 1</span>");
 	gtk_label_set_justify(GTK_LABEL(etiqueta), GTK_JUSTIFY_CENTER);
-	gtk_list_box_insert(gtk_list_box, etiqueta, 1);
+	gtk_list_box_insert(gtk_list_box, etiqueta, -1);
+	gtk_widget_show(etiqueta);
+	
+	etiqueta = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(etiqueta), "<span foreground=\"black\" size=\"x-small\">Programa 2</span>");
+	gtk_label_set_justify(GTK_LABEL(etiqueta), GTK_JUSTIFY_CENTER);
+	gtk_list_box_insert(gtk_list_box, etiqueta, -1);
+	gtk_widget_show(etiqueta);	
+	
+	etiqueta = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(etiqueta), "<span foreground=\"black\" size=\"x-small\">Programa 3</span>");
+	gtk_label_set_justify(GTK_LABEL(etiqueta), GTK_JUSTIFY_CENTER);
+	gtk_list_box_insert(gtk_list_box, etiqueta, -1);
 	gtk_widget_show(etiqueta);
 	
 	button = gtk_button_new_with_label ("Editar Programa");
@@ -459,7 +480,12 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
 
 void selected_event_callback (GtkListBox *list_box, GtkListBoxRow *row, gpointer data)
 {
-	g_print("Seleccionada línea en lista, gafas\n");
+	GtkListBoxRow *listBoxRow = (GtkListBoxRow*)gtk_list_box_get_selected_row (list_box);
+	int prog_seleccionado = gtk_list_box_row_get_index(listBoxRow);
+	repositorio->setIdProgramaSeleccionado(prog_seleccionado+1);
+	
+	//g_print("Seleccionada línea en lista, gafas\n");
+	printf("Seleccionada línea %d en lista, gafas\n", prog_seleccionado);
 }
 
 
@@ -480,6 +506,8 @@ gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 	//---------------------------------
 int main(int argc, char **argv)
 {
+	/*Creamos el repositorio*/
+	repositorio = new CRepositorio();
 
 	/*Creamos las hebras*/
 	if (pthread_create(&hebra1, NULL, funcion_hebra1, (void *)&hebra1) != 0) printf("No se pudo crear hebra_1\n");
@@ -518,6 +546,10 @@ int main(int argc, char **argv)
 	g_print("Ejecutando bcm2835_close\n");
 	bcm2835_close();
 	g_print("Fin ejecución bcm2835_close\n");
+	
+	//Finalizando, liberamos el repositorio
+	delete repositorio;
+	repositorio = NULL;
 
 	return 0;
 	
