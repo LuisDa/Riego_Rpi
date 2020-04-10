@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include "Repositorio.h"
 
 CRepositorio::CRepositorio()
@@ -6,6 +5,7 @@ CRepositorio::CRepositorio()
 	m_Programa1_p = (programa_riego_t*)malloc(sizeof(programa_riego_t));
 	m_Programa2_p = (programa_riego_t*)malloc(sizeof(programa_riego_t));
 	m_Programa3_p = (programa_riego_t*)malloc(sizeof(programa_riego_t));
+	m_EstadoValvulas_p = (estado_valvulas_t*)malloc(sizeof(estado_valvulas_t));
 }
 
 CRepositorio::~CRepositorio()
@@ -26,7 +26,13 @@ CRepositorio::~CRepositorio()
 	{
 		free(m_Programa3_p);
 		m_Programa3_p = NULL;
-	}		
+	}	
+	
+	if (m_EstadoValvulas_p != NULL)
+	{
+		free(m_EstadoValvulas_p);
+		m_EstadoValvulas_p = NULL;
+	}	
 }
 
 void CRepositorio::setHoraInicio(char num_prog, char hora, char min)
@@ -58,5 +64,17 @@ void CRepositorio::setDuracionValv(char num_prog, char num_valv, char duracion)
 		case 2: programa->duracion_valv2 = duracion; break;
 		case 3: programa->duracion_valv3 = duracion; break;
 		case 4: programa->duracion_valv3 = duracion; break;
+	}
+}
+
+void CRepositorio::setEstadoValvula(int numValv, bool estado)
+{
+	switch(numValv)
+	{
+		case 1: m_EstadoValvulas_p->valvula1_sts = (estado==true)?1:0; break;
+		case 2: m_EstadoValvulas_p->valvula2_sts = (estado==true)?1:0; break;
+		case 3: m_EstadoValvulas_p->valvula3_sts = (estado==true)?1:0; break;
+		case 4: m_EstadoValvulas_p->valvula4_sts = (estado==true)?1:0; break;
+		case 5: m_EstadoValvulas_p->valvula5_sts = (estado==true)?1:0; break;
 	}
 }

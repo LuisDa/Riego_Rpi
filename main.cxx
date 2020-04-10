@@ -198,16 +198,6 @@ void callback_botones (GtkWidget *widget, gpointer data )
 	{
 		conmutar_color = true;
 		gtk_widget_queue_draw(drawing_area);
-		//g_signal_emit((gpointer)"draw");
-		//gtk_signal_emit_by_name(window, "draw");
-		
-		//            g_signal_emit (G_OBJECT (puzzle), puzzle_signals [PUZZLE_SOLVED_SIGNAL], 0);
-		/*
-		  puzzle_signals[PUZZLE_SOLVED_SIGNAL] =
-      g_signal_new ("puzzle_solved",
-                    G_TYPE_FROM_CLASS (gobject_class),
-                    G_SIGNAL_RUN_FIRST, 0, NULL, NULL,
-                    g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0, NULL);*/
 	}
 	
 }
@@ -244,8 +234,7 @@ void inicializar_GUI(void)
 	g_signal_connect (G_OBJECT (window), "delete_event", G_CALLBACK (delete_event), NULL);	
 	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 	
-	window_programa = gtk_window_new (GTK_WINDOW_TOPLEVEL);		
-	//titulo[26] = 0;
+	window_programa = gtk_window_new (GTK_WINDOW_TOPLEVEL);			
 	gtk_window_set_title (GTK_WINDOW (window_programa), "Editar programa de riego");
 	gtk_window_set_default_size(GTK_WINDOW(window_programa), 400, 200);		//Size of the the client area (excluding the additional areas provided by the window manager)
 	gtk_window_set_position(GTK_WINDOW(window_programa), GTK_WIN_POS_CENTER);
