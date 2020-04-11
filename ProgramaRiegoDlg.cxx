@@ -12,7 +12,7 @@ CProgramaRiegoDlg::CProgramaRiegoDlg(const gchar* titulo)
 	gtk_window_set_title (GTK_WINDOW (m_ventana), titulo);
 	gtk_window_set_default_size(GTK_WINDOW(m_ventana), 400, 200);
 	gtk_window_set_position(GTK_WINDOW(m_ventana), GTK_WIN_POS_CENTER);
-	//g_signal_connect(G_OBJECT (ventana), "delete_event", G_CALLBACK (&CProgramaRiegoDlg::delete_event), NULL);
+	//g_signal_connect(G_OBJECT (m_ventana), "delete_event", G_CALLBACK (&CProgramaRiegoDlg::delete_event), NULL);
 	
 	gtk_container_add (GTK_CONTAINER (m_ventana), m_hboxVentana);
 	gtk_box_pack_start(GTK_BOX(m_hboxVentana), m_vboxEtiquetas, FALSE, FALSE, 0);

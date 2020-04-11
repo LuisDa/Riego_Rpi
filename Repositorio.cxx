@@ -75,6 +75,6 @@ void CRepositorio::setEstadoValvula(int numValv, bool estado)
 		case 2: m_EstadoValvulas_p->valvula2_sts = (estado==true)?1:0; break;
 		case 3: m_EstadoValvulas_p->valvula3_sts = (estado==true)?1:0; break;
 		case 4: m_EstadoValvulas_p->valvula4_sts = (estado==true)?1:0; break;
-		case 5: m_EstadoValvulas_p->valvula5_sts = (estado==true)?1:0; break;
+		case 5: m_EstadoValvulas_p->valvulaM_sts = (estado==true)?1:0; break;
 	}
 }

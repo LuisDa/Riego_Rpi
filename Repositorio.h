@@ -1,3 +1,6 @@
+#ifndef REPOSITORIO_H
+#define REPOSITORIO_H
+
 #include <stdlib.h>
 
 class CRepositorio
@@ -37,3 +40,4 @@ class CRepositorio
 		int m_IdProgramaSeleccionado = 1;
 		estado_valvulas_t* m_EstadoValvulas_p = NULL;
 };
+#endif

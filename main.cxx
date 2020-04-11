@@ -125,18 +125,25 @@ static int semaphore1_release_access(void)
 	return(1);	
 }
 
-//Declaración de funciones
+//Funciones relativas al GUI
 void inicializar_GUI(void);
 void finalizar_GUI(void);
+void configurar_botones(void);
+void configurar_etiquetas(void);
+void configurar_cajas_widgets(void);
+void configurar_lista_programas(void);
+void configurar_areas_dibujo(void);
+void configurar_marco_ventana_ppal(void);
 
+
+//Funciones de retrollamada para eventos del GUI
 static gboolean timer_event(GtkWidget *widget);
-
 gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data);
-
 gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data);
-
 void selected_event_callback (GtkListBox *list_box, GtkListBoxRow *row, gpointer data);
+void callback_botones (GtkWidget *widget, gpointer data);
 
+//Funciones de GPIO
 void inicializar_GPIO(void);
 
 //Hebras
@@ -147,20 +154,15 @@ int id_hebra2;
 
 void *funcion_hebra1 (void *parametros)
 {
-	//while(true)
-	//for (int i = 0; i < 20; i++)
 	while(ejecutar_hebra_1)
-	{
-		//printf("Hebra 1 ejecutando\n");
-		g_print ("Hebra 1 ejecutando\n");
+	{		
+		printf("Hebra 1 ejecutando\n");
 		sleep(1);
 	}
 }
 
 void *funcion_hebra2 (void *parametros)
 {
-	//while(true)
-	//for (int i = 0; i < 20; i++)
 	while(ejecutar_hebra_2)
 	{
 		printf("Hebra 2 ejecutando\n");
@@ -217,54 +219,8 @@ void inicializar_GPIO(void)
 	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_37, BCM2835_GPIO_FSEL_OUTP);	
 }
 
-void inicializar_GUI(void)
-{		
-	
-	/* This is called in all GTK applications. Arguments are parsed
-	* from the command line and are returned to the application. */
-	//gtk_init (&argc, &argv);
-	/* Create a new window */
-	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);	
-	gtk_window_set_title (GTK_WINDOW (window), "GÜINDOU");
-	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);		//Size of the the client area (excluding the additional areas provided by the window manager)
-	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
-		
-	g_timeout_add(1000, (GSourceFunc) timer_event, (gpointer) window); //Configuramos el temporizador para que genere un evento cada segundo (1000 ms)
-	
-	g_signal_connect (G_OBJECT (window), "delete_event", G_CALLBACK (delete_event), NULL);	
-	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
-	
-	window_programa = gtk_window_new (GTK_WINDOW_TOPLEVEL);			
-	gtk_window_set_title (GTK_WINDOW (window_programa), "Editar programa de riego");
-	gtk_window_set_default_size(GTK_WINDOW(window_programa), 400, 200);		//Size of the the client area (excluding the additional areas provided by the window manager)
-	gtk_window_set_position(GTK_WINDOW(window_programa), GTK_WIN_POS_CENTER);
-	g_signal_connect(G_OBJECT (window_programa), "delete_event", G_CALLBACK (delete_event), NULL);
-
-	
-	/* We create a box to pack widgets into. This is described in detail
-	* in the "packing" section. The box is not really visible, it
-	* is just used as a tool to arrange widgets. */
-	
-	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
-	
-	box1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-	
-	box2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-	
-	box3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-	
-	box4 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-	
-	box5 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
-
-	gtk_container_add (GTK_CONTAINER (window), hbox);
-	gtk_box_pack_start(GTK_BOX(hbox), box1, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox), box2, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox), box3, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox), box4, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(hbox), box5, FALSE, FALSE, 0);
-	
-
+void configurar_botones(void)
+{
 	button = gtk_button_new_with_label ("Button_1");		
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_1");
@@ -324,23 +280,17 @@ void inicializar_GUI(void)
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_10");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
+	gtk_widget_show (button);	
+	
+	button = gtk_button_new_with_label ("Editar Programa");
+	gtk_widget_set_size_request(button,2,2);
+	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "edit_programa");
+	gtk_box_pack_start(GTK_BOX (box5), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
-	
-	drawing_area = gtk_drawing_area_new(); 	   
-    //gtk_container_add (GTK_CONTAINER (box3), drawing_area);
-    gtk_widget_set_size_request (drawing_area, 100, 50);    
-	g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
-	gtk_box_pack_start(GTK_BOX (box3), drawing_area, FALSE, FALSE, 0);
-	gtk_widget_show (drawing_area);
-	
-	//list_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
-	list_box = gtk_list_box_new();	
-	gtk_list_box = (GtkListBox*)list_box;
-	g_signal_connect (G_OBJECT (gtk_list_box), "row-selected", G_CALLBACK (selected_event_callback), NULL);
-	gtk_widget_set_size_request (list_box, 100, 300);
-	gtk_box_pack_start(GTK_BOX (box4), list_box, FALSE, FALSE, 0);
-	gtk_widget_show(list_box);
-	
+}
+
+void configurar_etiquetas(void)
+{
 	GtkWidget *etiqueta;
 	etiqueta = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(etiqueta), "<span foreground=\"black\" size=\"x-small\">Programa 1</span>");
@@ -358,25 +308,72 @@ void inicializar_GUI(void)
 	gtk_label_set_markup(GTK_LABEL(etiqueta), "<span foreground=\"black\" size=\"x-small\">Programa 3</span>");
 	gtk_label_set_justify(GTK_LABEL(etiqueta), GTK_JUSTIFY_CENTER);
 	gtk_list_box_insert(gtk_list_box, etiqueta, -1);
-	gtk_widget_show(etiqueta);
+	gtk_widget_show(etiqueta);	
+}
+
+void configurar_cajas_widgets(void)
+{
+	hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
 	
-	button = gtk_button_new_with_label ("Editar Programa");
-	gtk_widget_set_size_request(button,2,2);
-	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "edit_programa");
-	gtk_box_pack_start(GTK_BOX (box5), button, FALSE, FALSE, 0);
-	gtk_widget_show (button);
+	box1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 	
-	/*
-	list_box = (GtkListBox*)gtk_list_box_new();
-	gtk_list_box_insert(list_box, (GtkWidget*)"Elemento 1", 1);
-	gtk_list_box_insert(list_box, (GtkWidget*)"Elemento 2", 2);
-	gtk_list_box_insert(list_box, (GtkWidget*)"Elemento 3", 3);
-	gtk_widget_set_size_request ((GtkWidget*)list_box, 100, 300);
-	gtk_box_pack_start(GTK_BOX (box4), (GtkWidget*)list_box, FALSE, FALSE, 0);
-	gtk_widget_show ((GtkWidget*)list_box);
-	*/ 
+	box2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 	
+	box3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 	
+	box4 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+	
+	box5 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+
+	gtk_container_add (GTK_CONTAINER (window), hbox);
+	gtk_box_pack_start(GTK_BOX(hbox), box1, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), box2, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), box3, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), box4, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), box5, FALSE, FALSE, 0);	
+}
+
+void configurar_lista_programas(void)
+{
+	list_box = gtk_list_box_new();	
+	gtk_list_box = (GtkListBox*)list_box;
+	g_signal_connect (G_OBJECT (gtk_list_box), "row-selected", G_CALLBACK (selected_event_callback), NULL);
+	gtk_widget_set_size_request (list_box, 100, 300);
+	gtk_box_pack_start(GTK_BOX (box4), list_box, FALSE, FALSE, 0);
+	gtk_widget_show(list_box);	
+}
+
+void configurar_areas_dibujo(void)
+{
+	drawing_area = gtk_drawing_area_new(); 	       
+    gtk_widget_set_size_request (drawing_area, 100, 50);    
+	g_signal_connect (G_OBJECT (drawing_area), "draw", G_CALLBACK (draw_callback), NULL);
+	gtk_box_pack_start(GTK_BOX (box3), drawing_area, FALSE, FALSE, 0);
+	gtk_widget_show (drawing_area);	
+}
+
+void configurar_marco_ventana_ppal(void)
+{
+	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);	
+	gtk_window_set_title (GTK_WINDOW (window), "GÜINDOU");
+	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);		//Size of the the client area (excluding the additional areas provided by the window manager)
+	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+		
+	g_timeout_add(1000, (GSourceFunc) timer_event, (gpointer) window); //Configuramos el temporizador para que genere un evento cada segundo (1000 ms)
+	
+	g_signal_connect (G_OBJECT (window), "delete_event", G_CALLBACK (delete_event), NULL);	
+	gtk_container_set_border_width (GTK_CONTAINER (window), 10);		
+}
+
+void inicializar_GUI(void)
+{
+	configurar_marco_ventana_ppal();	
+	configurar_cajas_widgets();	
+	configurar_botones();
+	configurar_areas_dibujo();
+	configurar_lista_programas();	
+	configurar_etiquetas();
+		
 	g_print("Creando elementos de la ventana\n");
 	gtk_widget_show (box1);
 	gtk_widget_show (box2);
