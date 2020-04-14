@@ -94,28 +94,8 @@ static int semaphore1_release_access(void)
 	return(1);	
 }
 
-/*
-//Funciones relativas al GUI
-void inicializar_GUI(void);
-void finalizar_GUI(void);
-void configurar_botones(void);
-void configurar_etiquetas(void);
-void configurar_cajas_widgets(void);
-void configurar_lista_programas(void);
-void configurar_areas_dibujo(void);
-void configurar_marco_ventana_ppal(void);
-
-
-//Funciones de retrollamada para eventos del GUI
-static gboolean timer_event(GtkWidget *widget);
-gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data);
-gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data);
-void selected_event_callback (GtkListBox *list_box, GtkListBoxRow *row, gpointer data);
-void callback_botones (GtkWidget *widget, gpointer data);
-*/
-
 //Funciones de GPIO
-void inicializar_GPIO(void);
+//void inicializar_GPIO(void);
 
 //Hebras
 pthread_t hebra1;

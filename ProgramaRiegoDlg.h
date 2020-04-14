@@ -13,6 +13,8 @@ class CProgramaRiegoDlg
 		void mostrar_ventana();
 		void setRepositorio(CRepositorio *repos) {m_repositorio = repos;}
 		
+		void callback_boton_aplicar(GtkWidget *widget, gpointer data);
+		
 		
 	private:
 		CRepositorio *m_repositorio;
@@ -22,6 +24,7 @@ class CProgramaRiegoDlg
 		GtkWidget *m_hboxVentana;
 		GtkWidget *m_vboxEtiquetas;
 		GtkWidget *m_vboxCampos;
+		GtkWidget *m_vboxBoton;
 		
 		GtkWidget *m_etiquetaHoraInicio;
 		GtkWidget *m_etiquetaDuracionValv1;
@@ -40,6 +43,8 @@ class CProgramaRiegoDlg
 		GtkTextBuffer *m_buffDuracionValv2;
 		GtkTextBuffer *m_buffDuracionValv3;
 		GtkTextBuffer *m_buffDuracionValv4;
+		
+		GtkWidget *m_botonAplicar;
 	
 };
 #endif 

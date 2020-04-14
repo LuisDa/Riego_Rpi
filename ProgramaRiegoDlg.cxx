@@ -7,6 +7,7 @@ CProgramaRiegoDlg::CProgramaRiegoDlg(const gchar* titulo)
 	m_hboxVentana = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
 	m_vboxEtiquetas = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 	m_vboxCampos = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
+	m_vboxBoton = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 	
 	m_ventana = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (m_ventana), titulo);
@@ -17,6 +18,7 @@ CProgramaRiegoDlg::CProgramaRiegoDlg(const gchar* titulo)
 	gtk_container_add (GTK_CONTAINER (m_ventana), m_hboxVentana);
 	gtk_box_pack_start(GTK_BOX(m_hboxVentana), m_vboxEtiquetas, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(m_hboxVentana), m_vboxCampos, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(m_hboxVentana), m_vboxBoton, FALSE, FALSE, 0);
 	
 	m_etiquetaHoraInicio = gtk_label_new(NULL);
 	gtk_widget_set_size_request(m_etiquetaHoraInicio,2,2);
@@ -89,10 +91,20 @@ CProgramaRiegoDlg::CProgramaRiegoDlg(const gchar* titulo)
 	gtk_widget_show (m_campoDuracionValv4);	
 	gtk_text_buffer_set_text (m_buffDuracionValv4, "0", -1);	
 	
+	
+	m_botonAplicar = gtk_button_new_with_label ("Aplicar");
+	gtk_widget_set_size_request(m_botonAplicar,2,2);
+	g_signal_connect (G_OBJECT (m_botonAplicar), "clicked", G_CALLBACK (&CProgramaRiegoDlg::callback_boton_aplicar), (gpointer) "edit_programa");
+	gtk_box_pack_start(GTK_BOX (m_vboxBoton), m_botonAplicar, FALSE, FALSE, 0);
+	gtk_widget_show (m_botonAplicar);
+	
+	
 	//Mostramos por último las cajas de widgets
 	gtk_widget_show(m_vboxEtiquetas);
 	gtk_widget_show(m_vboxCampos);
+	gtk_widget_show(m_vboxBoton);
 	gtk_widget_show(m_hboxVentana);
+	
 }
 
 CProgramaRiegoDlg::~CProgramaRiegoDlg()
@@ -112,3 +124,7 @@ void CProgramaRiegoDlg::mostrar_ventana()
 	gtk_widget_show (m_ventana);
 }
 
+void CProgramaRiegoDlg::callback_boton_aplicar(GtkWidget *widget, gpointer data)
+{
+	g_print("Pulsado botón Aplicar\n");
+}
