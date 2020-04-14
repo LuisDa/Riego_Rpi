@@ -94,6 +94,7 @@ static int semaphore1_release_access(void)
 	return(1);	
 }
 
+/*
 //Funciones relativas al GUI
 void inicializar_GUI(void);
 void finalizar_GUI(void);
@@ -111,6 +112,7 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data);
 gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data);
 void selected_event_callback (GtkListBox *list_box, GtkListBoxRow *row, gpointer data);
 void callback_botones (GtkWidget *widget, gpointer data);
+*/
 
 //Funciones de GPIO
 void inicializar_GPIO(void);
