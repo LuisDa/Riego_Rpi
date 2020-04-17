@@ -2,6 +2,8 @@
 #include <math.h>
 #include "var_func_globales.h"
 
+char prueba = '0';
+
 volatile bool ejecutar_hebra_1 = true;
 volatile bool ejecutar_hebra_2 = true;
 
@@ -13,15 +15,15 @@ const char* id_botones[10] = {"button_1", "button_2", "button_3", "button_4", "b
 const char* titulo_ventana_prog_riego = "Editar programa de riego";
 CRepositorio *repositorio = 0;
 
-GtkWidget *window;
+GtkWidget *ventana_ppal;
+
+
 GtkWidget *button;
 GtkWidget *drawing_area;
 GtkWidget *list_box;
 GtkComboBox *cbox_quaity;
 GtkListBox *gtk_list_box;
-
-GtkWidget *window_programa;
-CProgramaRiegoDlg *ventana_programa = NULL;
+char titulo_vent_prog_riego[28];
 
 GtkWidget *box1;	
 GtkWidget *box2;	
@@ -45,17 +47,14 @@ void callback_botones (GtkWidget *widget, gpointer data )
 	else if (strcmp((gchar*)data, "button_9") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);
 	else if (strcmp((gchar*)data, "button_10") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
 	else if (strcmp((gchar*)data, "edit_programa") == 0)
-	{
-		char titulo[28];
-		sprintf(titulo, "Editar programa de riego %d", repositorio->getIdProgramaSeleccionado());
-		titulo[27] = 0;
-		//ventana_programa = new CProgramaRiegoDlg(titulo_ventana_prog_riego);
-		ventana_programa = new CProgramaRiegoDlg(titulo);
-		ventana_programa->setRepositorio(repositorio);
-		ventana_programa->mostrar_ventana();		
+	{		
+		sprintf(titulo_vent_prog_riego, "Editar programa de riego %d", repositorio->getIdProgramaSeleccionado());
+		titulo_vent_prog_riego[27] = 0;
+			
+		configurar_ventana_prog_riego();
+		mostrar_ventana_prog_riego();
 	}
-	//else if (strcmp((gchar*)data, "edit_programa") == 0) gtk_widget_show (window_programa);
-	
+		
 	if (strcmp((gchar*)data, "button_2") == 0)
 	{
 		conmutar_color = true;
@@ -185,7 +184,7 @@ void configurar_cajas_widgets(void)
 	
 	box5 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 
-	gtk_container_add (GTK_CONTAINER (window), hbox);
+	gtk_container_add (GTK_CONTAINER (ventana_ppal), hbox);
 	gtk_box_pack_start(GTK_BOX(hbox), box1, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), box2, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), box3, FALSE, FALSE, 0);
@@ -214,15 +213,15 @@ void configurar_areas_dibujo(void)
 
 void configurar_marco_ventana_ppal(void)
 {
-	window = gtk_window_new (GTK_WINDOW_TOPLEVEL);	
-	gtk_window_set_title (GTK_WINDOW (window), "GÜINDOU");
-	gtk_window_set_default_size(GTK_WINDOW(window), 600, 500);		//Size of the the client area (excluding the additional areas provided by the window manager)
-	gtk_window_set_position(GTK_WINDOW(window), GTK_WIN_POS_CENTER);
+	ventana_ppal = gtk_window_new (GTK_WINDOW_TOPLEVEL);	
+	gtk_window_set_title (GTK_WINDOW (ventana_ppal), "GÜINDOU");
+	gtk_window_set_default_size(GTK_WINDOW(ventana_ppal), 600, 500);		//Size of the the client area (excluding the additional areas provided by the window manager)
+	gtk_window_set_position(GTK_WINDOW(ventana_ppal), GTK_WIN_POS_CENTER);
 		
-	g_timeout_add(1000, (GSourceFunc) timer_event, (gpointer) window); //Configuramos el temporizador para que genere un evento cada segundo (1000 ms)
+	g_timeout_add(1000, (GSourceFunc) timer_event, (gpointer) ventana_ppal); //Configuramos el temporizador para que genere un evento cada segundo (1000 ms)
 	
-	g_signal_connect (G_OBJECT (window), "delete_event", G_CALLBACK (delete_event), NULL);	
-	gtk_container_set_border_width (GTK_CONTAINER (window), 10);		
+	g_signal_connect (G_OBJECT (ventana_ppal), "delete_event", G_CALLBACK (delete_event), NULL);	
+	gtk_container_set_border_width (GTK_CONTAINER (ventana_ppal), 10);		
 }
 
 void inicializar_GUI(void)
@@ -241,7 +240,7 @@ void inicializar_GUI(void)
 	gtk_widget_show (box4);
 	gtk_widget_show (box5);
 	gtk_widget_show (hbox);
-	gtk_widget_show (window);
+	gtk_widget_show (ventana_ppal);
 	g_print("Ventana creada\n");
 }
 
@@ -281,8 +280,18 @@ void finalizar_GUI(void)
 static gboolean timer_event(GtkWidget *widget)
 {
 	g_print ("Saltose el evento del TIMER\n");
-	//bcm2835_pwm_set_data(PWM_CHANNEL, 1024);
-
+	
+	if (ventana_prog_riego_activa)
+	{
+		if (prueba == '9') prueba = '0';
+		else prueba++;
+		char cadena[2];
+		cadena[0] = prueba;
+		cadena[1] = 0;
+		
+		gtk_text_buffer_set_text (buffDuracionValv1_edicProg, cadena, -1);	
+	}
+	
 	return TRUE; //Si devuelve TRUE, el temporizador volverá a lanzarse, si devuelve FALSE, se detiene.
 }
 
@@ -338,7 +347,12 @@ void selected_event_callback (GtkListBox *list_box, GtkListBoxRow *row, gpointer
 /* another callback */
 gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 {
-	if (widget == window)
+	if (widget == ventana_edic_programa)
+	{		
+		//gtk_widget_hide(widget);
+		ventana_prog_riego_activa = false;
+	}
+	else if (widget == ventana_ppal)
 	{	
 		//finalizar_GUI();
 		gtk_main_quit ();		
