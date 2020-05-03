@@ -6,13 +6,13 @@
 OBJ = main.o Repositorio.o var_func_globales.o var_func_vent_programa.o
 
 #Set any dependant header files so that if they are edited they cause a complete re-compile (e.g. main.h some_subfunctions.h some_definitions_file.h ), or leave blank
-DEPS = Repositorio.h var_func_globales.h
+DEPS = Repositorio.h var_func_globales.h 
 
 #Any special libraries you are using in your project (e.g. -lbcm2835 -lrt `pkg-config --libs gtk+-3.0` ), or leave blank
-LIBS = -lbcm2835 -lpthread `pkg-config --libs gtk+-3.0`
+LIBS = -lbcm2835 -lpthread -lComms `pkg-config --libs gtk+-3.0`
 
 #Set any compiler flags you want to use (e.g. -I/usr/include/somefolder `pkg-config --cflags gtk+-3.0` ), or leave blank
-CFLAGS = `pkg-config --cflags gtk+-3.0` -lrt 
+CFLAGS = `pkg-config --cflags gtk+-3.0` -lrt -L./libcomms
 
 #Set the compiler you are using ( gcc for C or g++ for C++ )
 CC = g++

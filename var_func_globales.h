@@ -5,6 +5,12 @@
 #include <bcm2835.h>
 #include "Repositorio.h"
 
+#include "libcomms/include/message_sender.hpp"
+#include "libcomms/include/message_receiver.hpp"
+
+extern CMessageSender* emisor_local;
+extern CMessageReceiver* receptor_local;
+
 extern volatile bool ejecutar_hebra_1;// = true;
 extern volatile bool ejecutar_hebra_2;// = true;
 

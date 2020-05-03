@@ -105,11 +105,35 @@ int id_hebra2;
 
 void *funcion_hebra1 (void *parametros)
 {
+	/*
 	while(ejecutar_hebra_1)
 	{		
 		printf("Hebra 1 ejecutando\n");
 		sleep(1);
 	}
+	*/
+	char* ipAddr = "127.0.0.1";
+	sockaddr_in* sdrInfo_p = NULL;
+	char* netIf = "lo";
+	
+	do {
+		//Iniciar el receptor, escuchando en el puerto pasado como parámetro		
+		CMessageReceiver *cMsgRcv = new CMessageReceiver(4600, netIf);
+		cMsgRcv -> receiveMessage(ejecutar_hebra_1); //FIXME: Si cerramos la aplicación y está a la espera... Tostose.
+		sdrInfo_p = cMsgRcv -> getSenderInformation();
+		printf("INFO DEL EMISOR, CON PUNTEROS: IP = %s, PORT = %d\n",
+						inet_ntoa(sdrInfo_p -> sin_addr), ntohs(sdrInfo_p -> sin_port));
+		int portSdr = ntohs(sdrInfo_p -> sin_port);
+		ipAddr = inet_ntoa(sdrInfo_p -> sin_addr);
+		delete cMsgRcv;
+
+		//Construir un emisor que envíe la respuesta.
+		CMessageSender *cMsgSdr = new CMessageSender(ipAddr, portSdr, netIf);
+		cMsgSdr -> sendMessage("Recibido mensaje", false);
+		delete cMsgSdr;
+	} while (ejecutar_hebra_1); 
+	
+	
 }
 
 void *funcion_hebra2 (void *parametros)
@@ -129,6 +153,9 @@ int main(int argc, char **argv)
 {
 	/*Creamos el repositorio*/
 	repositorio = new CRepositorio();
+	
+	//emisor_local = new CMessageSender("127.0.0.1", 4600, "lo");
+	//receptor_local = new CMessageReceiver(4600, "lo");
 
 	/*Creamos las hebras*/
 	if (pthread_create(&hebra1, NULL, funcion_hebra1, (void *)&hebra1) != 0) printf("No se pudo crear hebra_1\n");

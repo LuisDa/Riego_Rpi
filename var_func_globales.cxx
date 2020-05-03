@@ -4,6 +4,9 @@
 
 char prueba = '0';
 
+CMessageSender* emisor_local;
+CMessageReceiver* receptor_local;
+
 volatile bool ejecutar_hebra_1 = true;
 volatile bool ejecutar_hebra_2 = true;
 
