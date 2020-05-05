@@ -119,7 +119,9 @@ void *funcion_hebra1 (void *parametros)
 	do {
 		//Iniciar el receptor, escuchando en el puerto pasado como parámetro		
 		CMessageReceiver *cMsgRcv = new CMessageReceiver(4600, netIf);
+		printf("<HEBRA 1> Esperando recibir mensaje Ethernet...\n");
 		cMsgRcv -> receiveMessage(ejecutar_hebra_1); //FIXME: Si cerramos la aplicación y está a la espera... Tostose.
+		printf("<HEBRA 1> Recibiose\n");
 		sdrInfo_p = cMsgRcv -> getSenderInformation();
 		printf("INFO DEL EMISOR, CON PUNTEROS: IP = %s, PORT = %d\n",
 						inet_ntoa(sdrInfo_p -> sin_addr), ntohs(sdrInfo_p -> sin_port));
@@ -140,7 +142,7 @@ void *funcion_hebra2 (void *parametros)
 {
 	while(ejecutar_hebra_2)
 	{
-		printf("Hebra 2 ejecutando\n");
+		//printf("Hebra 2 ejecutando\n");
 		sleep(1);	
 	}
 }

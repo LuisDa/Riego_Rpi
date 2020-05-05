@@ -56,6 +56,8 @@ ejecutables_sh: libComms.so
 	g++	-L.	-o	testReceive	testReceive.cpp -lComms
 	g++	-L.	-o	testMulticastClient	testMulticastClient.cpp	-lComms
 	g++	-L.	-o	testMulticastServer	testMulticastServer.cpp	-lComms
+	g++	-L.	-o	sendAndReceive sendAndReceive.cpp	-lComms
+	g++	-L.	-o	receiveAndReply	receiveAndReply.cpp	-lComms
 	
 clean:
-	rm	-f	*.o *.so	testNetworkIfManager	testSend	testReceive	testMulticastServer	testMulticastClient	sendAndReceive
+	rm	-f	*.o *.so	testNetworkIfManager	testSend	testReceive	testMulticastServer	testMulticastClient	sendAndReceive	receiveAndReply

@@ -42,6 +42,8 @@ int main (int argc, char* argv[]) {
 	g_undefined_loop = false;
 	sockaddr_in* sdrInfo_p = NULL;
 
+	printf("Número de argumentos: %i\n", argc);
+
 	if ((argc < 5)||(argc > 7)) {
 		show_help();
 		exit(1);
