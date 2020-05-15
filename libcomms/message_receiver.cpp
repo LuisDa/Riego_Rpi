@@ -87,11 +87,21 @@ int CMessageReceiver::receiveMessage(bool receive) {
 	#else
 		socklen_t addr_len = sizeof(struct sockaddr_in);
 	#endif
+	
+	/*
 		if ((numBytes=recvfrom(m_Socket, m_Buffer, MAXBUFLEN-1, 0,
 			(struct sockaddr *)&m_TheirAddr, &addr_len)) == -1) {
 			perror("SYSTEM FAILURE: recvfrom");
 			exit(1);
 		}
+		*/
+		
+		if ((numBytes=recvfrom(m_Socket, m_Buffer, MAXBUFLEN-1, EAGAIN,
+			(struct sockaddr *)&m_TheirAddr, &addr_len)) == -1) {
+			perror("SYSTEM FAILURE: recvfrom");
+			//exit(1);
+		}
+					
 
 		printf("- Got packet from %s\n", inet_ntoa(m_TheirAddr.sin_addr));
 		printf("- Packet is %d bytes long\n", numBytes);

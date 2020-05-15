@@ -9,7 +9,7 @@ echo "Mensaje $4"
 echo "Continuidad $5"
 echo "Ciclo $6"
 
-if [ "$#" -lt 5 ]; then
+if [ "$#" -lt 4 ]; then
 
 	echo "Usage: $0 <Net_Interface> <IP_address> <Port_number> <Message_to_send> [<Continuous(0=false, other=true)>] [<delay(ms)>]"
 else

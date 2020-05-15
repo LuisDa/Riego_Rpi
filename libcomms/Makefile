@@ -52,6 +52,7 @@ libComms.so:
 	g++	network_interface_manager.o	message_sender.o	message_receiver.o	multicast_client.o	multicast_server.o	-shared -o libComms.so
 	
 ejecutables_sh: libComms.so	
+	g++	-L.	-o	enviar_comando	enviarComando.cpp	-lComms
 	g++	-L.	-o	testSend	testSend.cpp -lComms
 	g++	-L.	-o	testReceive	testReceive.cpp -lComms
 	g++	-L.	-o	testMulticastClient	testMulticastClient.cpp	-lComms
@@ -60,4 +61,4 @@ ejecutables_sh: libComms.so
 	g++	-L.	-o	receiveAndReply	receiveAndReply.cpp	-lComms
 	
 clean:
-	rm	-f	*.o *.so	testNetworkIfManager	testSend	testReceive	testMulticastServer	testMulticastClient	sendAndReceive	receiveAndReply
+	rm	-f	*.o *.so	testNetworkIfManager	testSend	testReceive	testMulticastServer	testMulticastClient	sendAndReceive	receiveAndReply	enviar_comando

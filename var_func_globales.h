@@ -79,6 +79,9 @@ void configurar_ventana_prog_riego(void);
 void mostrar_ventana_prog_riego(void);
 void callback_boton_aplicar(GtkWidget *widget, gpointer data);
 
+void refrescar_estado_valvulas();
+
+
 
 //Funciones de retrollamada para eventos del GUI, ventana principal
 static gboolean timer_event(GtkWidget *widget);

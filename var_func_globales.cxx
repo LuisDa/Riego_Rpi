@@ -282,7 +282,7 @@ void finalizar_GUI(void)
 //Callback para el TIMER
 static gboolean timer_event(GtkWidget *widget)
 {
-	g_print ("Saltose el evento del TIMER\n");
+	//g_print ("Saltose el evento del TIMER\n");
 	
 	if (ventana_prog_riego_activa)
 	{

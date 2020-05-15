@@ -32,7 +32,9 @@ class CRepositorio
 		void setIdProgramaSeleccionado(int id) { m_IdProgramaSeleccionado = id; }
 		int getIdProgramaSeleccionado() {return m_IdProgramaSeleccionado; }
 		void setEstadoValvula(int numValv, bool estado);
+		bool getEstadoValvula(int numValv);
 		
+				
 	private:
 		programa_riego_t* m_Programa1_p = NULL;
 		programa_riego_t* m_Programa2_p = NULL;

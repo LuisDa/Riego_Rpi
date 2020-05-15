@@ -103,6 +103,11 @@ pthread_t hebra2;
 int id_hebra1;
 int id_hebra2;
 
+//CMessageSender *emisorUDP = NULL;
+CMessageReceiver *receptorUDP = NULL;
+
+bool actualizar_estado_valvulas = false;
+
 void *funcion_hebra1 (void *parametros)
 {
 	/*
@@ -115,23 +120,50 @@ void *funcion_hebra1 (void *parametros)
 	char* ipAddr = "127.0.0.1";
 	sockaddr_in* sdrInfo_p = NULL;
 	char* netIf = "lo";
+	char* mens_recibido = NULL;
+	char mens_respuesta[23];
+	
+	receptorUDP = new CMessageReceiver(4600, netIf);
 	
 	do {
 		//Iniciar el receptor, escuchando en el puerto pasado como parámetro		
-		CMessageReceiver *cMsgRcv = new CMessageReceiver(4600, netIf);
+		//CMessageReceiver *cMsgRcv = new CMessageReceiver(4600, netIf);
 		printf("<HEBRA 1> Esperando recibir mensaje Ethernet...\n");
-		cMsgRcv -> receiveMessage(ejecutar_hebra_1); //FIXME: Si cerramos la aplicación y está a la espera... Tostose.
+		receptorUDP -> receiveMessage(ejecutar_hebra_1); //FIXME: Si cerramos la aplicación y está a la espera... Tostose.
 		printf("<HEBRA 1> Recibiose\n");
-		sdrInfo_p = cMsgRcv -> getSenderInformation();
+		sdrInfo_p = receptorUDP -> getSenderInformation();
 		printf("INFO DEL EMISOR, CON PUNTEROS: IP = %s, PORT = %d\n",
 						inet_ntoa(sdrInfo_p -> sin_addr), ntohs(sdrInfo_p -> sin_port));
 		int portSdr = ntohs(sdrInfo_p -> sin_port);
 		ipAddr = inet_ntoa(sdrInfo_p -> sin_addr);
-		delete cMsgRcv;
-
+		mens_recibido = receptorUDP->getReceivedMessage();	
+		
+		printf("********** Mensaje recibido, visto desde la hebra: %s\n", mens_recibido);	
+		
+		//delete cMsgRcv;
+		
+		//Procesamos el mensaje
+		if (mens_recibido[0] == 'a') 
+		{
+			repositorio->setEstadoValvula(mens_recibido[1], true);
+			actualizar_estado_valvulas = true;
+		}
+		else if (mens_recibido[0] == 'd') 
+		{			
+			repositorio->setEstadoValvula(mens_recibido[1], false);
+			actualizar_estado_valvulas = true;
+		}
+		
+		usleep(1000000);
+		//delete cMsgRcv;
+		
 		//Construir un emisor que envíe la respuesta.
 		CMessageSender *cMsgSdr = new CMessageSender(ipAddr, portSdr, netIf);
-		cMsgSdr -> sendMessage("Recibido mensaje", false);
+		sprintf(mens_respuesta, "%s válvula %d", (mens_recibido[0] == 'a')?"Activada":"Desactivada", mens_recibido[1]);
+		mens_respuesta[22] = 0;
+		cMsgSdr -> sendMessage(mens_respuesta, false);
+		
+		//delete cMsgRcv;
 		delete cMsgSdr;
 	} while (ejecutar_hebra_1); 
 	
@@ -142,7 +174,28 @@ void *funcion_hebra2 (void *parametros)
 {
 	while(ejecutar_hebra_2)
 	{
-		//printf("Hebra 2 ejecutando\n");
+		if (actualizar_estado_valvulas == true)
+		{
+			//printf("Hebra 2 ejecutando\n");
+			//Refrescamos estado de las válvulas
+			if (repositorio->getEstadoValvula(1) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_11, HIGH);
+			else bcm2835_gpio_write(RPI_V2_GPIO_P1_11, LOW);
+			
+			if (repositorio->getEstadoValvula(2) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_13, HIGH);
+			else bcm2835_gpio_write(RPI_V2_GPIO_P1_13, LOW);		
+			
+			if (repositorio->getEstadoValvula(3) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, HIGH);
+			else bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
+			
+			if (repositorio->getEstadoValvula(4) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, HIGH);
+			else bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);	
+			
+			if (repositorio->getEstadoValvula(5) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, HIGH);
+			else bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);			
+			
+			actualizar_estado_valvulas = false;
+		}
+		
 		sleep(1);	
 	}
 }
@@ -185,7 +238,9 @@ int main(int argc, char **argv)
 	
 	//Finalizamos las hebras
 	g_print("Ejecutando pthread_join a la hebra1\n");
-	pthread_join(hebra1, NULL);
+	delete receptorUDP;
+	receptorUDP = NULL;
+	//pthread_join(hebra1, NULL);
 	g_print("Fin de pthread_join a la hebra1\n");
 	
 	g_print("Ejecutando pthread_join a la hebra2\n");	
