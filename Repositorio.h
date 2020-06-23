@@ -33,6 +33,7 @@ class CRepositorio
 		int getIdProgramaSeleccionado() {return m_IdProgramaSeleccionado; }
 		void setEstadoValvula(int numValv, bool estado);
 		bool getEstadoValvula(int numValv);
+		char getDuracionValv(char num_prog, char num_valv);
 		
 				
 	private:

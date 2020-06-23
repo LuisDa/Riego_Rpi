@@ -292,7 +292,7 @@ static gboolean timer_event(GtkWidget *widget)
 		cadena[0] = prueba;
 		cadena[1] = 0;
 		
-		gtk_text_buffer_set_text (buffDuracionValv1_edicProg, cadena, -1);	
+		//gtk_text_buffer_set_text (buffDuracionValv1_edicProg, cadena, -1);	
 	}
 	
 	return TRUE; //Si devuelve TRUE, el temporizador volverá a lanzarse, si devuelve FALSE, se detiene.

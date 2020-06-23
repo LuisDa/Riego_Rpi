@@ -1,4 +1,11 @@
 #include "Repositorio.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <bits/stdc++.h>
+
+using namespace std;
+
 
 CRepositorio::CRepositorio()
 {
@@ -6,6 +13,145 @@ CRepositorio::CRepositorio()
 	m_Programa2_p = (programa_riego_t*)malloc(sizeof(programa_riego_t));
 	m_Programa3_p = (programa_riego_t*)malloc(sizeof(programa_riego_t));
 	m_EstadoValvulas_p = (estado_valvulas_t*)malloc(sizeof(estado_valvulas_t));
+	
+	//Leemos de los ficheros de los programas los estados de las válvulas y las horas de inicio
+	char* programas_riego[3] = {"programa_1.txt", "programa_2.txt", "programa_3.txt"};
+	
+	for (int i = 0; i < 3; i++)
+	{
+		char* nombre_fich = programas_riego[i];
+		
+		ifstream fichero_prog(nombre_fich);
+		string linea;
+		
+		if (((bool)fichero_prog) && fichero_prog.is_open()) //Fichero programa_1.txt existe y está abierto
+		{
+			int num_valv = 1;
+			
+			programa_riego_t* programa_riego = NULL;	
+			
+			if (i == 0) programa_riego = m_Programa1_p;
+			else if (i == 1) programa_riego = m_Programa2_p;
+			else if (i == 2) programa_riego = m_Programa3_p;
+			
+						
+			//programa_riego = m_Programa1_p + i * sizeof(programa_riego_t);
+						
+			while(getline(fichero_prog, linea))
+			{			
+				vector<string> tokens;
+				stringstream check1(linea);
+				string str_aux;
+				
+				while(getline(check1, str_aux, ' '))
+				{
+					tokens.push_back(str_aux);
+				}
+				
+				//repositorio->setDuracionValv(1, num_valv, atoi((char*)tokens[2].c_str()));
+							
+				
+				switch(num_valv)
+				{
+					case 1: programa_riego->duracion_valv1 = atoi((char*)tokens[1].c_str());
+					case 2: programa_riego->duracion_valv2 = atoi((char*)tokens[1].c_str());
+					case 3: programa_riego->duracion_valv3 = atoi((char*)tokens[1].c_str());
+					case 4: programa_riego->duracion_valv4 = atoi((char*)tokens[1].c_str());
+				}
+							
+				//for(int i = 0; i < tokens.size(); i++) cout << tokens[i] << '\n';
+							
+				num_valv++;
+				
+				/*				
+				char* linea_ch = (char*)linea.c_str();				
+				printf("%s\n", linea_ch);
+				*/			
+
+			}
+			
+	//		printf ("PROGRAMA %i\n", (i+1));
+			
+	//		printf (" * V1: %d\n", programa_riego->duracion_valv1);
+	//		printf (" * V2: %d\n", programa_riego->duracion_valv2);
+	//		printf (" * V3: %d\n", programa_riego->duracion_valv3);
+	//		printf (" * V4: %d\n", programa_riego->duracion_valv4);
+			
+	//		printf ("\n");
+		}
+		
+	}
+	
+	
+	printf ("PROGRAMA 1\n");
+			
+	printf (" * V1: %d\n", m_Programa1_p->duracion_valv1);
+	printf (" * V2: %d\n", m_Programa1_p->duracion_valv2);
+	printf (" * V3: %d\n", m_Programa1_p->duracion_valv3);
+	printf (" * V4: %d\n", m_Programa1_p->duracion_valv4);
+			
+	printf ("\n");	
+	
+
+	printf ("PROGRAMA 2\n");
+			
+	printf (" * V1: %d\n", m_Programa2_p->duracion_valv1);
+	printf (" * V2: %d\n", m_Programa2_p->duracion_valv2);
+	printf (" * V3: %d\n", m_Programa2_p->duracion_valv3);
+	printf (" * V4: %d\n", m_Programa2_p->duracion_valv4);
+			
+	printf ("\n");	
+	
+	printf ("PROGRAMA 3\n");
+			
+	printf (" * V1: %d\n", m_Programa3_p->duracion_valv1);
+	printf (" * V2: %d\n", m_Programa3_p->duracion_valv2);
+	printf (" * V3: %d\n", m_Programa3_p->duracion_valv3);
+	printf (" * V4: %d\n", m_Programa3_p->duracion_valv4);
+			
+	printf ("\n");		
+	
+	
+	/*
+	ifstream fichero_prog1 ("programa_1.txt");
+	string linea;	
+	
+	if (((bool)fichero_prog1) && fichero_prog1.is_open()) //Fichero programa_1.txt existe y está abierto
+	{
+		int num_valv = 1;
+		
+		while(getline(fichero_prog1, linea))
+		{			
+			vector<string> tokens;
+			stringstream check1(linea);
+			string str_aux;
+			
+			while(getline(check1, str_aux, ' '))
+			{
+				tokens.push_back(str_aux);
+			}
+			
+			//repositorio->setDuracionValv(1, num_valv, atoi((char*)tokens[2].c_str()));
+			
+			switch(num_valv)
+			{
+				case 1: m_Programa1_p->duracion_valv1 = atoi((char*)tokens[1].c_str());
+				case 2: m_Programa1_p->duracion_valv2 = atoi((char*)tokens[1].c_str());
+				case 3: m_Programa1_p->duracion_valv3 = atoi((char*)tokens[1].c_str());
+				case 4: m_Programa1_p->duracion_valv4 = atoi((char*)tokens[1].c_str());
+			}
+						
+			//for(int i = 0; i < tokens.size(); i++) cout << tokens[i] << '\n';
+						
+			num_valv++;
+			
+			//char* linea_ch = (char*)linea.c_str();
+			//printf("%s\n", linea_ch);
+			
+		}
+	}
+	*/
+	
 }
 
 CRepositorio::~CRepositorio()
@@ -63,7 +209,7 @@ void CRepositorio::setDuracionValv(char num_prog, char num_valv, char duracion)
 		case 1: programa->duracion_valv1 = duracion; break;
 		case 2: programa->duracion_valv2 = duracion; break;
 		case 3: programa->duracion_valv3 = duracion; break;
-		case 4: programa->duracion_valv3 = duracion; break;
+		case 4: programa->duracion_valv4 = duracion; break;
 	}
 }
 
@@ -91,4 +237,29 @@ bool CRepositorio::getEstadoValvula(int numValv)
 	}
 	
 	return false;
+}
+
+
+char CRepositorio::getDuracionValv(char num_prog, char num_valv)
+{	
+	programa_riego_t* prog_riego;// = m_Programa1_p + (num_prog - 1)*sizeof(programa_riego_t);
+	
+	switch(num_prog)
+	{
+		case 1: prog_riego = m_Programa1_p; break;
+		case 2: prog_riego = m_Programa2_p; break;
+		case 3: prog_riego = m_Programa3_p; break;
+	}
+	
+	if (prog_riego)
+	{
+		switch(num_valv)
+		{
+			case 1: return prog_riego->duracion_valv1;
+			case 2: return prog_riego->duracion_valv2;
+			case 3: return prog_riego->duracion_valv3;
+			case 4: return prog_riego->duracion_valv4;
+			default: return 0;
+		}
+	}	
 }

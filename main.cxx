@@ -123,6 +123,12 @@ void *funcion_hebra1 (void *parametros)
 	char* mens_recibido = NULL;
 	char mens_respuesta[23];
 	
+	ipAddr = "192.168.1.63";
+	netIf = "eth0";
+	
+	ipAddr = "192.168.1.146";
+	netIf = "wlan0";
+	
 	receptorUDP = new CMessageReceiver(4600, netIf);
 	
 	do {
@@ -152,6 +158,13 @@ void *funcion_hebra1 (void *parametros)
 		{			
 			repositorio->setEstadoValvula(mens_recibido[1], false);
 			actualizar_estado_valvulas = true;
+		}
+		//Medida de distancia con la Arduino Ethernet
+		else if (mens_recibido[0] == 'm')
+		{
+			unsigned int distancia = (mens_recibido[1] << 8) + mens_recibido[2];
+			
+			printf("Distancia medida: %d\n", distancia);
 		}
 		
 		usleep(1000000);

@@ -1,6 +1,9 @@
 #include <iostream>
+#include <fstream>
 #include <string.h>
 #include "var_func_globales.h"
+
+using namespace std;
 
 GtkWidget *ventana_edic_programa;
 
@@ -33,6 +36,8 @@ bool ventana_prog_riego_activa = false;
 
 void configurar_ventana_prog_riego(void)
 {
+	//char* campo_valv = " ";
+	char campo_valv[3];
 	
 	hboxVentana_edicProg = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
 	vboxEtiquetas_edicProg = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
@@ -98,28 +103,52 @@ void configurar_ventana_prog_riego(void)
 	gtk_widget_set_size_request(campoDuracionValv1_edicProg, 80, 20);
 	gtk_box_pack_start (GTK_BOX(vboxCampos_edicProg), campoDuracionValv1_edicProg, FALSE, FALSE, 0);
 	gtk_widget_show (campoDuracionValv1_edicProg);	
-	gtk_text_buffer_set_text (buffDuracionValv1_edicProg, "0", -1);	
+	//gtk_text_buffer_set_text (buffDuracionValv1_edicProg, "0", -1);
+	
+	//campo_valv[0] = '2';// repositorio->getDuracionValv(repositorio->getIdProgramaSeleccionado(), 1);	
+	char duracion_valvula = repositorio->getDuracionValv(repositorio->getIdProgramaSeleccionado(), 1);
+	sprintf(campo_valv, "%d\0", duracion_valvula);	
+	gtk_text_buffer_set_text (buffDuracionValv1_edicProg, (const char*)campo_valv, -1);	
 
 	campoDuracionValv2_edicProg = gtk_text_view_new();
 	buffDuracionValv2_edicProg = gtk_text_view_get_buffer (GTK_TEXT_VIEW (campoDuracionValv2_edicProg));
 	gtk_widget_set_size_request(campoDuracionValv2_edicProg, 80, 20);
 	gtk_box_pack_start (GTK_BOX(vboxCampos_edicProg), campoDuracionValv2_edicProg, FALSE, FALSE, 0);
 	gtk_widget_show (campoDuracionValv2_edicProg);	
-	gtk_text_buffer_set_text (buffDuracionValv2_edicProg, "0", -1);
+	
+	duracion_valvula = repositorio->getDuracionValv(repositorio->getIdProgramaSeleccionado(), 2);
+	sprintf(campo_valv, "%d\0", duracion_valvula);	
+	gtk_text_buffer_set_text (buffDuracionValv2_edicProg, (const char*)campo_valv, -1);	
+	//campo_valv[0] = repositorio->getDuracionValv(repositorio->getIdProgramaSeleccionado(), 2);	
+	//gtk_text_buffer_set_text (buffDuracionValv2_edicProg, (const char*)campo_valv, -1);	
+	//gtk_text_buffer_set_text (buffDuracionValv2_edicProg, "0", -1);
 
 	campoDuracionValv3_edicProg = gtk_text_view_new();
 	buffDuracionValv3_edicProg = gtk_text_view_get_buffer (GTK_TEXT_VIEW (campoDuracionValv3_edicProg));
 	gtk_widget_set_size_request(campoDuracionValv3_edicProg, 80, 20);
 	gtk_box_pack_start (GTK_BOX(vboxCampos_edicProg), campoDuracionValv3_edicProg, FALSE, FALSE, 0);
 	gtk_widget_show (campoDuracionValv3_edicProg);	
-	gtk_text_buffer_set_text (buffDuracionValv3_edicProg, "0", -1);
+	
+	duracion_valvula = repositorio->getDuracionValv(repositorio->getIdProgramaSeleccionado(), 3);
+	sprintf(campo_valv, "%d\0", duracion_valvula);	
+	gtk_text_buffer_set_text (buffDuracionValv3_edicProg, (const char*)campo_valv, -1);	
+	//campo_valv[0] = repositorio->getDuracionValv(repositorio->getIdProgramaSeleccionado(), 3);	
+	//gtk_text_buffer_set_text (buffDuracionValv2_edicProg, (const char*)campo_valv, -1);		
+	//gtk_text_buffer_set_text (buffDuracionValv3_edicProg, "0", -1);
 
 	campoDuracionValv4_edicProg = gtk_text_view_new();
 	buffDuracionValv4_edicProg = gtk_text_view_get_buffer (GTK_TEXT_VIEW (campoDuracionValv4_edicProg));
 	gtk_widget_set_size_request(campoDuracionValv4_edicProg, 80, 20);
 	gtk_box_pack_start (GTK_BOX(vboxCampos_edicProg), campoDuracionValv4_edicProg, FALSE, FALSE, 0);
 	gtk_widget_show (campoDuracionValv4_edicProg);	
-	gtk_text_buffer_set_text (buffDuracionValv4_edicProg, "0", -1);	
+	
+	duracion_valvula = repositorio->getDuracionValv(repositorio->getIdProgramaSeleccionado(), 4);
+	sprintf(campo_valv, "%d\0", duracion_valvula);	
+	gtk_text_buffer_set_text (buffDuracionValv4_edicProg, (const char*)campo_valv, -1);		
+	
+	//campo_valv[0] = repositorio->getDuracionValv(repositorio->getIdProgramaSeleccionado(), 4);	
+	//gtk_text_buffer_set_text (buffDuracionValv4_edicProg, (const char*)campo_valv, -1);	
+	//gtk_text_buffer_set_text (buffDuracionValv4_edicProg, "0", -1);	
 	
 	
 	botonAplicar_edicProg = gtk_button_new_with_label ("Aplicar");
@@ -151,10 +180,39 @@ void callback_boton_aplicar(GtkWidget *widget, gpointer data)
 	char *buffer;
 	buffer = new char[6];
 	memset(buffer, 0x00, sizeof(buffer));
+
+	ofstream fichero;
 	
+	if (repositorio->getIdProgramaSeleccionado() == 1) fichero.open("programa_1.txt");
+	else if (repositorio->getIdProgramaSeleccionado() == 2) fichero.open("programa_2.txt");
+	else if (repositorio->getIdProgramaSeleccionado() == 3) fichero.open("programa_3.txt");
+		
+	//Guardamos el contenido de los campos en un fichero
 	gtk_text_buffer_get_start_iter (buffDuracionValv1_edicProg, &inicio);
 	gtk_text_buffer_get_end_iter (buffDuracionValv1_edicProg, &fin);
-	buffer = gtk_text_buffer_get_text (buffDuracionValv1_edicProg, &inicio, &fin, FALSE); 
+	buffer = gtk_text_buffer_get_text (buffDuracionValv1_edicProg, &inicio, &fin, FALSE); 	
+	repositorio->setDuracionValv(repositorio->getIdProgramaSeleccionado(), 1, atoi(buffer));	
+	fichero << "V1 " << buffer << std::endl;
+	
+	gtk_text_buffer_get_start_iter (buffDuracionValv2_edicProg, &inicio);
+	gtk_text_buffer_get_end_iter (buffDuracionValv2_edicProg, &fin);
+	buffer = gtk_text_buffer_get_text (buffDuracionValv2_edicProg, &inicio, &fin, FALSE); 	
+	repositorio->setDuracionValv(repositorio->getIdProgramaSeleccionado(), 2, atoi(buffer));	
+	fichero << "V2 " << buffer << std::endl;
+	
+	gtk_text_buffer_get_start_iter (buffDuracionValv3_edicProg, &inicio);
+	gtk_text_buffer_get_end_iter (buffDuracionValv3_edicProg, &fin);
+	buffer = gtk_text_buffer_get_text (buffDuracionValv3_edicProg, &inicio, &fin, FALSE); 
+	repositorio->setDuracionValv(repositorio->getIdProgramaSeleccionado(), 3, atoi(buffer));
+	fichero << "V3 " << buffer << std::endl;	
+	
+	gtk_text_buffer_get_start_iter (buffDuracionValv4_edicProg, &inicio);
+	gtk_text_buffer_get_end_iter (buffDuracionValv4_edicProg, &fin);
+	buffer = gtk_text_buffer_get_text (buffDuracionValv4_edicProg, &inicio, &fin, FALSE); 
+	repositorio->setDuracionValv(repositorio->getIdProgramaSeleccionado(), 4, atoi(buffer));
+	fichero << "V4 " << buffer << std::endl;
+	
+	fichero.close();
 
-	std::cout << "TEXTO: <<"<< buffer << ">> "<< std::endl;
+	//std::cout << "Válvula 1: <<"<< buffer << ">> "<< std::endl;
 }
