@@ -5,6 +5,10 @@
 #Set all your object files (the object files of all the .c files in your project, e.g. main.o my_sub_functions.o )
 OBJ = main.o Repositorio.o var_func_globales.o var_func_vent_programa.o
 
+OBJ_BG = control_riego_bg.o 
+
+PRUEBA_CMD_SH = prueba_comandos_shm.o
+
 #Set any dependant header files so that if they are edited they cause a complete re-compile (e.g. main.h some_subfunctions.h some_definitions_file.h ), or leave blank
 DEPS = Repositorio.h var_func_globales.h 
 
@@ -28,9 +32,17 @@ EXTENSION = .cxx
 #Set your desired exe output file name here
 control_riego_rpi: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	
+control_riego_bg: $(OBJ_BG)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+	
+prueba_comandos_shm: $(PRUEBA_CMD_SH)	
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+		
+all:	control_riego_bg	control_riego_rpi	prueba_comandos_shm
 
 #Cleanup
 .PHONY: clean
 
 clean:
-	rm -f *.o *~ core *~ 
+	rm -f *.o *~ core *~ control_riego_bg control_riego_rpi
