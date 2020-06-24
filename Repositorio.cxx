@@ -62,24 +62,8 @@ CRepositorio::CRepositorio()
 				//for(int i = 0; i < tokens.size(); i++) cout << tokens[i] << '\n';
 							
 				num_valv++;
-				
-				/*				
-				char* linea_ch = (char*)linea.c_str();				
-				printf("%s\n", linea_ch);
-				*/			
-
 			}
-			
-	//		printf ("PROGRAMA %i\n", (i+1));
-			
-	//		printf (" * V1: %d\n", programa_riego->duracion_valv1);
-	//		printf (" * V2: %d\n", programa_riego->duracion_valv2);
-	//		printf (" * V3: %d\n", programa_riego->duracion_valv3);
-	//		printf (" * V4: %d\n", programa_riego->duracion_valv4);
-			
-	//		printf ("\n");
-		}
-		
+		}		
 	}
 	
 	
@@ -110,47 +94,6 @@ CRepositorio::CRepositorio()
 	printf (" * V4: %d\n", m_Programa3_p->duracion_valv4);
 			
 	printf ("\n");		
-	
-	
-	/*
-	ifstream fichero_prog1 ("programa_1.txt");
-	string linea;	
-	
-	if (((bool)fichero_prog1) && fichero_prog1.is_open()) //Fichero programa_1.txt existe y está abierto
-	{
-		int num_valv = 1;
-		
-		while(getline(fichero_prog1, linea))
-		{			
-			vector<string> tokens;
-			stringstream check1(linea);
-			string str_aux;
-			
-			while(getline(check1, str_aux, ' '))
-			{
-				tokens.push_back(str_aux);
-			}
-			
-			//repositorio->setDuracionValv(1, num_valv, atoi((char*)tokens[2].c_str()));
-			
-			switch(num_valv)
-			{
-				case 1: m_Programa1_p->duracion_valv1 = atoi((char*)tokens[1].c_str());
-				case 2: m_Programa1_p->duracion_valv2 = atoi((char*)tokens[1].c_str());
-				case 3: m_Programa1_p->duracion_valv3 = atoi((char*)tokens[1].c_str());
-				case 4: m_Programa1_p->duracion_valv4 = atoi((char*)tokens[1].c_str());
-			}
-						
-			//for(int i = 0; i < tokens.size(); i++) cout << tokens[i] << '\n';
-						
-			num_valv++;
-			
-			//char* linea_ch = (char*)linea.c_str();
-			//printf("%s\n", linea_ch);
-			
-		}
-	}
-	*/
 	
 }
 
@@ -202,7 +145,15 @@ void CRepositorio::setHoraInicio(char num_prog, char hora, char min)
 
 void CRepositorio::setDuracionValv(char num_prog, char num_valv, char duracion)
 {
-	programa_riego_t* programa = (m_Programa1_p) + (sizeof(programa_riego_t) + (num_prog - 1));
+	//programa_riego_t* programa = (m_Programa1_p) + (sizeof(programa_riego_t) + (num_prog - 1));
+	programa_riego_t* programa;
+	
+	switch(num_prog)
+	{
+		case 1: programa = m_Programa1_p; break;
+		case 2: programa = m_Programa2_p; break;
+		case 3: programa = m_Programa3_p; break;
+	}
 	
 	switch(num_valv)
 	{
