@@ -9,13 +9,16 @@
 #include<unistd.h>
 #include<string.h>
 
-#define BUF_SIZE 1024
+#define BUF_SIZE 10
 #define SHM_KEY 0x1234
+
+//#define PRUEBA_BYTE_SIMPLE
 
 struct shmseg {
    int cnt;
    int complete;
-   char buf[BUF_SIZE];
+   //char buf[BUF_SIZE];
+   char comando;
 };
 int fill_buffer(char * bufptr, int size);
 
@@ -25,13 +28,22 @@ int main(int argc, char *argv[]) {
    char *bufptr;
    int spaceavailable;
    
+   char *shm_byte_p;
+   
+   
+#ifdef PRUEBA_BYTE_SIMPLE   
    shmid = shmget(SHM_KEY, sizeof(struct shmseg), 0644|IPC_CREAT);
+#else
+   shmid = shmget(SHM_KEY, 1, 0644|IPC_CREAT);
+#endif   
+   
    
    if (shmid == -1) {
       perror("Shared memory");
       return 1;
    }
-   
+
+#ifndef PRUEBA_BYTE_SIMPLE   
    // Attach to the segment to get a pointer to it.
    shmp = (shmseg*) shmat(shmid, NULL, 0);
    
@@ -41,16 +53,17 @@ int main(int argc, char *argv[]) {
    }
    
    /* Transfer blocks of data from buffer to shared memory */
-   bufptr = shmp->buf;
+   //bufptr = shmp->buf;
    spaceavailable = BUF_SIZE;
    
    for (numtimes = 0; numtimes < 5; numtimes++) {
-      shmp->cnt = fill_buffer(bufptr, spaceavailable);
+      //shmp->cnt = fill_buffer(bufptr, spaceavailable);
       shmp->complete = 0;
+      shmp->comando = 0xA0 + numtimes;
       printf("Writing Process: Shared Memory Write: Wrote %d bytes\n", shmp->cnt);
-      bufptr = shmp->buf;
+      //bufptr = shmp->buf;
       spaceavailable = BUF_SIZE;
-      sleep(3);
+      sleep(1);
    }
    
    printf("Writing Process: Wrote %d times\n", numtimes);
@@ -65,6 +78,34 @@ int main(int argc, char *argv[]) {
       perror("shmctl");
       return 1;
    }
+   
+#else   
+   shm_byte_p = (char*) shmat(shmid, NULL, 0);
+   
+   if (shm_byte_p == (void *) -1) {
+      perror("Shared memory attach");
+      return 1;
+   } 
+   
+   for (int i = 0; i < 10; i++)
+   {
+	   char enviado = 'A' + i;
+	   printf ("Enviando %c\n", enviado);
+	   shm_byte_p = &enviado;
+	   sleep (1);
+   }
+   
+   if (shmdt(shm_byte_p) == -1) {
+      perror("shmdt");
+      return 1;
+   }
+
+   if (shmctl(shmid, IPC_RMID, 0) == -1) {
+      perror("shmctl");
+      return 1;
+   }
+   
+#endif   
    
    printf("Writing Process: Complete\n");
    return 0;
