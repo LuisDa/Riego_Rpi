@@ -18,6 +18,8 @@ const char* id_botones[10] = {"button_1", "button_2", "button_3", "button_4", "b
 const char* titulo_ventana_prog_riego = "Editar programa de riego";
 CRepositorio *repositorio = 0;
 
+volatile bool habilitar_edicion_programa = true;
+
 GtkWidget *ventana_ppal;
 
 
@@ -51,11 +53,17 @@ void callback_botones (GtkWidget *widget, gpointer data )
 	else if (strcmp((gchar*)data, "button_10") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
 	else if (strcmp((gchar*)data, "edit_programa") == 0)
 	{		
-		sprintf(titulo_vent_prog_riego, "Editar programa de riego %d", repositorio->getIdProgramaSeleccionado());
-		titulo_vent_prog_riego[27] = 0;
+		if (habilitar_edicion_programa)
+		{
+			habilitar_edicion_programa = false; //Si ya hemos abierto una ventana de edición, no dejamos crear una segunda, 
+												//porque el programa se pega un tortazo.
 			
-		configurar_ventana_prog_riego();
-		mostrar_ventana_prog_riego();
+			sprintf(titulo_vent_prog_riego, "Editar programa de riego %d", repositorio->getIdProgramaSeleccionado());
+			titulo_vent_prog_riego[27] = 0;
+				
+			configurar_ventana_prog_riego();
+			mostrar_ventana_prog_riego();
+		}
 	}
 		
 	if (strcmp((gchar*)data, "button_2") == 0)
@@ -354,6 +362,7 @@ gint delete_event( GtkWidget *widget, GdkEvent *event, gpointer data )
 	{		
 		//gtk_widget_hide(widget);
 		ventana_prog_riego_activa = false;
+		habilitar_edicion_programa = true;
 	}
 	else if (widget == ventana_ppal)
 	{	

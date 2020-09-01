@@ -214,6 +214,8 @@ void callback_boton_aplicar(GtkWidget *widget, gpointer data)
 	
 	fichero.close();
 	
+	habilitar_edicion_programa = true;
+	
 	gtk_widget_destroy(ventana_edic_programa);
 
 	//std::cout << "Válvula 1: <<"<< buffer << ">> "<< std::endl;

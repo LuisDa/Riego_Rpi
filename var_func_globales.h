@@ -21,6 +21,8 @@ extern const char* id_botones[10];// = {"button_1", "button_2", "button_3", "but
 
 extern const char* titulo_ventana_prog_riego;// = "Editar programa de riego";
 
+extern volatile bool habilitar_edicion_programa;
+
 extern CRepositorio *repositorio;// = 0;
 extern char prueba;
 
