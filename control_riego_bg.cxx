@@ -12,11 +12,12 @@
 
 #define BUF_SIZE 10
 #define SHM_KEY 0x1234
-//#define PRUEBA_BYTE_SIMPLE
+//#define PRUEBA_BYTE_SIMPLE //Con esto no funciona
 
 
 struct shmseg {
    int cnt;
+   int enviado;
    int complete;
    //char buf[BUF_SIZE];
    char comando;
@@ -39,8 +40,9 @@ int main (int argc, char* argv[])
 	char *shm_byte_p;
 	char cmd;
 
-#ifdef PRUEBA_BYTE_SIMPLE	
+#ifndef PRUEBA_BYTE_SIMPLE	
 	shmid = shmget(SHM_KEY, sizeof(struct shmseg), 0644|IPC_CREAT);
+	//shmid = shmget(SHM_KEY, 12, 0644|IPC_CREAT);
 #else
 	shmid = shmget(SHM_KEY, 1, 0644|IPC_CREAT);
 #endif	
@@ -61,17 +63,43 @@ int main (int argc, char* argv[])
 	
 	
 	   /* Transfer blocks of data from shared memory to stdout*/
+	//En este bucle, procesamos el comando.   
 	while (shmp->complete != 1) {
 		//printf("segment contains : \n\"%s\"; Comando %.02X \n", shmp->buf, shmp->comando);
-		printf("Segmento contiene: %.02X\n", shmp->comando);
-		
-		if (shmp->cnt == -1) {
-			perror("read");
-			return 1;
+		if (shmp->enviado == 1)
+		{
+			printf("Segmento contiene: %.02X\n", shmp->comando);
+					
+			if (shmp->cnt == -1) {
+				perror("read");
+				return 1;
+			}
+			
+			switch (shmp->comando)
+			{
+				case 0x11: printf("Activando válvula 1\n"); break;
+				case 0x12: printf("Activando válvula 2\n"); break;
+				case 0x13: printf("Activando válvula 3\n"); break;
+				case 0x14: printf("Activando válvula 4\n"); break;
+				case 0x15: printf("Activando válvula M\n"); break;
+							
+				case 0x01: printf("Desactivando válvula 1\n"); break;
+				case 0x02: printf("Desactivando válvula 2\n"); break;
+				case 0x03: printf("Desactivando válvula 3\n"); break;
+				case 0x04: printf("Desactivando válvula 4\n"); break;
+				case 0x05: printf("Desactivando válvula M\n"); break;
+				
+				case 0xFF: printf("Finalizando servidor \n"); break;
+				
+				default: printf("Comando no contemplado\n"); break;			
+				
+			}
+			
+			printf("Reading Process: Shared Memory: Read %d bytes\n", shmp->cnt);
+			shmp->enviado = 0;
 		}
 		
-		printf("Reading Process: Shared Memory: Read %d bytes\n", shmp->cnt);
-		sleep(1);
+		//sleep(1);
 	}
 	
 	printf("Reading Process: Reading Done, Detaching Shared Memory\n");
@@ -80,6 +108,11 @@ int main (int argc, char* argv[])
 		perror("shmdt");
 		return 1;
 	}
+	
+   if (shmctl(shmid, IPC_RMID, 0) == -1) {
+      perror("shmctl");
+      return 1;
+   }
 #else
 	shm_byte_p = (char*)shmat(shmid, NULL, 0);
 	

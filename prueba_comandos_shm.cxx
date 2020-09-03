@@ -16,6 +16,7 @@
 
 struct shmseg {
    int cnt;
+   int enviado;
    int complete;
    //char buf[BUF_SIZE];
    char comando;
@@ -31,8 +32,9 @@ int main(int argc, char *argv[]) {
    char *shm_byte_p;
    
    
-#ifdef PRUEBA_BYTE_SIMPLE   
+#ifndef PRUEBA_BYTE_SIMPLE   
    shmid = shmget(SHM_KEY, sizeof(struct shmseg), 0644|IPC_CREAT);
+   //shmid = shmget(SHM_KEY, 12, 0644|IPC_CREAT);
 #else
    shmid = shmget(SHM_KEY, 1, 0644|IPC_CREAT);
 #endif   
@@ -56,29 +58,64 @@ int main(int argc, char *argv[]) {
    //bufptr = shmp->buf;
    spaceavailable = BUF_SIZE;
    
+   /*
    for (numtimes = 0; numtimes < 5; numtimes++) {
       //shmp->cnt = fill_buffer(bufptr, spaceavailable);
       shmp->complete = 0;
       shmp->comando = 0xA0 + numtimes;
+      shmp->cnt = 1;
       printf("Writing Process: Shared Memory Write: Wrote %d bytes\n", shmp->cnt);
       //bufptr = shmp->buf;
       spaceavailable = BUF_SIZE;
       sleep(1);
    }
+   */
+   if (argc < 2) 
+   {
+	   printf("Uso: %s <cmd> <num valvula>\n", argv[0]);
+	   return 1;
+   }
+   else if (argc == 2)
+   {
+	   if (strcmp(argv[1], "s") == 0)
+	   {
+		   shmp->comando = 0xFF;
+		   shmp->complete = 1;
+	   }	   
+   }
+   else if (argc == 3)
+   {
+	   if (strcmp(argv[1], "a") == 0)
+	   {
+		   char num_valv = (char)atoi(argv[2]);
+		   shmp->comando = 0x10 + num_valv;		   
+	   }
+	   else if (strcmp(argv[1], "d") == 0)
+	   {
+		   char num_valv = (char)atoi(argv[2]);
+		   shmp->comando = 0x00 + num_valv;		   
+	   }
+	   	   
+	   shmp->complete = 0;
+   }
    
-   printf("Writing Process: Wrote %d times\n", numtimes);
-   shmp->complete = 1;
+   shmp->enviado = 1;
+     
+   //printf("Writing Process: Wrote %d times\n", numtimes);
+   //shmp->complete = 1;
+
 
    if (shmdt(shmp) == -1) {
       perror("shmdt");
       return 1;
    }
 
+/* //Esto elimina el ID de los segmentos de memoria compartida
    if (shmctl(shmid, IPC_RMID, 0) == -1) {
       perror("shmctl");
       return 1;
    }
-   
+*/   
 #else   
    shm_byte_p = (char*) shmat(shmid, NULL, 0);
    
