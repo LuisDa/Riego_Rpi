@@ -2,6 +2,7 @@
 #include <sys/ipc.h>
 #include <sys/types.h>
 #include <sys/shm.h>
+#include <pthread.h>
 #include <string.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -15,6 +16,13 @@
 //#define PRUEBA_BYTE_SIMPLE //Con esto no funciona
 
 
+//Variables globales del programa
+CRepositorio* repositorio = NULL;
+pthread_t hebra_control_GPIO;
+volatile bool actualizar_estado_valvulas = false;
+volatile bool ejecutar_hebra_control_valvulas = true;
+
+
 struct shmseg {
    int cnt;
    int enviado;
@@ -25,11 +33,46 @@ struct shmseg {
 
 void inicializar_GPIO()
 {
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_11, BCM2835_GPIO_FSEL_OUTP);
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_13, BCM2835_GPIO_FSEL_OUTP);
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_33, BCM2835_GPIO_FSEL_OUTP);
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_35, BCM2835_GPIO_FSEL_OUTP);
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_37, BCM2835_GPIO_FSEL_OUTP);		
+	if (!bcm2835_init()) 
+	{	
+		printf("Error al ejecutar bcm2835_init()\n");
+		exit(1);
+	}
+	
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_11, BCM2835_GPIO_FSEL_OUTP); //Válvula 1
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_13, BCM2835_GPIO_FSEL_OUTP); //Válvula 2
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_33, BCM2835_GPIO_FSEL_OUTP); //Válvula 3
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_35, BCM2835_GPIO_FSEL_OUTP); //Válvula 4
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_37, BCM2835_GPIO_FSEL_OUTP); //Válvula maestra		
+}
+
+void *funcion_hebra_control_valvulas(void* parametros)
+{
+	while (ejecutar_hebra_control_valvulas)
+	{
+		if (actualizar_estado_valvulas)
+		{
+			if (repositorio->getEstadoValvula(1) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_11, HIGH);
+			else bcm2835_gpio_write(RPI_V2_GPIO_P1_11, LOW);
+			
+			if (repositorio->getEstadoValvula(2) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_13, HIGH);
+			else bcm2835_gpio_write(RPI_V2_GPIO_P1_13, LOW);		
+			
+			if (repositorio->getEstadoValvula(3) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, HIGH);
+			else bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
+			
+			if (repositorio->getEstadoValvula(4) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, HIGH);
+			else bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);	
+			
+			if (repositorio->getEstadoValvula(5) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, HIGH);
+			else bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);			
+			
+			actualizar_estado_valvulas = false;
+		}
+		
+		//sleep(1);
+		usleep(100000);
+	}
 }
 
 int main (int argc, char* argv[])
@@ -39,6 +82,15 @@ int main (int argc, char* argv[])
 	
 	char *shm_byte_p;
 	char cmd;
+	
+	repositorio = new CRepositorio();
+
+	if (pthread_create(&hebra_control_GPIO, NULL, funcion_hebra_control_valvulas, (void *)&hebra_control_GPIO) != 0) 
+	{
+		printf("No se pudo crear hebra_1\n");
+	}
+	
+	inicializar_GPIO();
 
 #ifndef PRUEBA_BYTE_SIMPLE	
 	shmid = shmget(SHM_KEY, sizeof(struct shmseg), 0644|IPC_CREAT);
@@ -77,30 +129,69 @@ int main (int argc, char* argv[])
 			
 			switch (shmp->comando)
 			{
-				case 0x11: printf("Activando válvula 1\n"); break;
-				case 0x12: printf("Activando válvula 2\n"); break;
-				case 0x13: printf("Activando válvula 3\n"); break;
-				case 0x14: printf("Activando válvula 4\n"); break;
-				case 0x15: printf("Activando válvula M\n"); break;
+				case 0x11: 
+					printf("Activando válvula 1\n"); 
+					repositorio->setEstadoValvula(1, true);
+					break;
+				case 0x12: 
+					printf("Activando válvula 2\n"); 
+					repositorio->setEstadoValvula(2, true);
+					break;
+				case 0x13: 
+					printf("Activando válvula 3\n"); 
+					repositorio->setEstadoValvula(3, true);
+					break;
+				case 0x14: 
+					printf("Activando válvula 4\n"); 
+					repositorio->setEstadoValvula(4, true);
+					break;
+				case 0x15: 
+					printf("Activando válvula M\n"); 
+					repositorio->setEstadoValvula(5, true);
+					break;
 							
-				case 0x01: printf("Desactivando válvula 1\n"); break;
-				case 0x02: printf("Desactivando válvula 2\n"); break;
-				case 0x03: printf("Desactivando válvula 3\n"); break;
-				case 0x04: printf("Desactivando válvula 4\n"); break;
-				case 0x05: printf("Desactivando válvula M\n"); break;
+				case 0x01: 
+					printf("Desactivando válvula 1\n"); 
+					repositorio->setEstadoValvula(1, false);
+					break;
+				case 0x02: 
+					printf("Desactivando válvula 2\n"); 
+					repositorio->setEstadoValvula(2, false);
+					break;
+				case 0x03: 
+					printf("Desactivando válvula 3\n"); 
+					repositorio->setEstadoValvula(3, false);
+					break;
+				case 0x04: 
+					printf("Desactivando válvula 4\n"); 
+					repositorio->setEstadoValvula(4, false);
+					break;
+				case 0x05: 
+					printf("Desactivando válvula M\n"); 
+					repositorio->setEstadoValvula(5, false);
+					break;
 				
-				case 0xFF: printf("Finalizando servidor \n"); break;
+				case 0xFF: //Aquí nunca entra, porque el valor de complete está a 1 y se sale del bucle antes
+					printf("Finalizando servidor \n"); 
+					ejecutar_hebra_control_valvulas = false;
+					break;
 				
 				default: printf("Comando no contemplado\n"); break;			
 				
 			}
+			
+			actualizar_estado_valvulas = true;
+			
 			
 			printf("Reading Process: Shared Memory: Read %d bytes\n", shmp->cnt);
 			shmp->enviado = 0;
 		}
 		
 		//sleep(1);
+		usleep(100000);
 	}
+	
+	ejecutar_hebra_control_valvulas = false;
 	
 	printf("Reading Process: Reading Done, Detaching Shared Memory\n");
 	
@@ -133,6 +224,9 @@ int main (int argc, char* argv[])
 	}
 
 #endif
+	
+	pthread_join(hebra_control_GPIO, NULL);
+	bcm2835_close();
 	
 	printf("Reading Process: Complete\n");
 	return 0;
