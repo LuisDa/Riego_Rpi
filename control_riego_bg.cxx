@@ -19,8 +19,10 @@
 //Variables globales del programa
 CRepositorio* repositorio = NULL;
 pthread_t hebra_control_GPIO;
+pthread_t hebra_chequeo_hora;
 volatile bool actualizar_estado_valvulas = false;
 volatile bool ejecutar_hebra_control_valvulas = true;
+volatile bool ejecutar_hebra_chequeo_hora = true;
 
 
 struct shmseg {
@@ -75,6 +77,15 @@ void *funcion_hebra_control_valvulas(void* parametros)
 	}
 }
 
+void *funcion_chequeo_hora(void* parametros)
+{
+	while(ejecutar_hebra_chequeo_hora)
+	{	
+		printf("Chequeando la hora\n");
+		usleep(500000);
+	}
+}
+
 int main (int argc, char* argv[])
 {
 	int shmid;
@@ -87,7 +98,12 @@ int main (int argc, char* argv[])
 
 	if (pthread_create(&hebra_control_GPIO, NULL, funcion_hebra_control_valvulas, (void *)&hebra_control_GPIO) != 0) 
 	{
-		printf("No se pudo crear hebra_1\n");
+		printf("No se pudo crear hebra de control del GPIO\n");
+	}
+	
+	if (pthread_create(&hebra_chequeo_hora, NULL, funcion_chequeo_hora, (void *)&hebra_chequeo_hora) != 0)
+	{
+		printf("No se pudo crear hebra de chequeo de hora\n");
 	}
 	
 	inicializar_GPIO();
@@ -173,6 +189,7 @@ int main (int argc, char* argv[])
 				
 				case 0xFF: //Aquí nunca entra, porque el valor de complete está a 1 y se sale del bucle antes
 					printf("Finalizando servidor \n"); 
+					ejecutar_hebra_chequeo_hora = false;
 					ejecutar_hebra_control_valvulas = false;
 					break;
 				
@@ -192,6 +209,7 @@ int main (int argc, char* argv[])
 	}
 	
 	ejecutar_hebra_control_valvulas = false;
+	ejecutar_hebra_chequeo_hora = false;
 	
 	printf("Reading Process: Reading Done, Detaching Shared Memory\n");
 	
@@ -226,6 +244,8 @@ int main (int argc, char* argv[])
 #endif
 	
 	pthread_join(hebra_control_GPIO, NULL);
+	
+	
 	bcm2835_close();
 	
 	printf("Reading Process: Complete\n");
