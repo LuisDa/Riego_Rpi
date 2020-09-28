@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <bcm2835.h>
 #include "Repositorio.h"
@@ -81,8 +82,14 @@ void *funcion_chequeo_hora(void* parametros)
 {
 	while(ejecutar_hebra_chequeo_hora)
 	{	
-		printf("Chequeando la hora\n");
-		usleep(500000);
+		time_t rawtime;
+		struct tm* fecha_hora;
+		time(&rawtime);
+		fecha_hora = localtime(&rawtime);
+		
+		printf("Chequeando la hora: %d:%d:%d\n", fecha_hora->tm_hour, fecha_hora->tm_min, fecha_hora->tm_sec);
+		//usleep(500000);
+		sleep(1);
 	}
 }
 

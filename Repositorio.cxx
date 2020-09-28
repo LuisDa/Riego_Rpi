@@ -36,6 +36,32 @@ CRepositorio::CRepositorio()
 			
 						
 			//programa_riego = m_Programa1_p + i * sizeof(programa_riego_t);
+			
+			//Primera línea: leer hora de inicio
+			if (getline(fichero_prog, linea))
+			{
+				vector<string> tokens;
+				stringstream check1(linea);
+				string str_aux;
+				
+				//Primero analizamos la línea <<H hh:mm>>
+				while(getline(check1, str_aux, ' '))
+				{
+					tokens.push_back(str_aux);
+				}
+				
+				//Y después el token en sub-tokens: hora y minuto
+				vector<string> subtokens;
+				stringstream check2(tokens[1]);
+				
+				while(getline(check2, str_aux, ':'))
+				{
+					subtokens.push_back(str_aux);
+				}
+				
+				programa_riego->hora_ini = atoi((char*)subtokens[0].c_str());
+				programa_riego->minuto_ini = atoi((char*)subtokens[1].c_str());
+			}
 						
 			while(getline(fichero_prog, linea))
 			{			
@@ -68,7 +94,8 @@ CRepositorio::CRepositorio()
 	
 	
 	printf ("PROGRAMA 1\n");
-			
+	
+	printf (" * HORA: %d:%d\n", m_Programa1_p->hora_ini, m_Programa1_p->minuto_ini);		
 	printf (" * V1: %d\n", m_Programa1_p->duracion_valv1);
 	printf (" * V2: %d\n", m_Programa1_p->duracion_valv2);
 	printf (" * V3: %d\n", m_Programa1_p->duracion_valv3);
@@ -78,7 +105,8 @@ CRepositorio::CRepositorio()
 	
 
 	printf ("PROGRAMA 2\n");
-			
+	
+	printf (" * HORA: %d:%d\n", m_Programa2_p->hora_ini, m_Programa2_p->minuto_ini);				
 	printf (" * V1: %d\n", m_Programa2_p->duracion_valv1);
 	printf (" * V2: %d\n", m_Programa2_p->duracion_valv2);
 	printf (" * V3: %d\n", m_Programa2_p->duracion_valv3);
@@ -87,7 +115,8 @@ CRepositorio::CRepositorio()
 	printf ("\n");	
 	
 	printf ("PROGRAMA 3\n");
-			
+	
+	printf (" * HORA: %d:%d\n", m_Programa3_p->hora_ini, m_Programa3_p->minuto_ini);				
 	printf (" * V1: %d\n", m_Programa3_p->duracion_valv1);
 	printf (" * V2: %d\n", m_Programa3_p->duracion_valv2);
 	printf (" * V3: %d\n", m_Programa3_p->duracion_valv3);

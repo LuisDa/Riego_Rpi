@@ -187,6 +187,12 @@ void callback_boton_aplicar(GtkWidget *widget, gpointer data)
 	else if (repositorio->getIdProgramaSeleccionado() == 2) fichero.open("programa_2.txt");
 	else if (repositorio->getIdProgramaSeleccionado() == 3) fichero.open("programa_3.txt");
 		
+	//Guardamos en primer lugar la hora de inicio	//buffHoraInicio_edicProg
+	gtk_text_buffer_get_start_iter (buffHoraInicio_edicProg, &inicio);
+	gtk_text_buffer_get_end_iter (buffHoraInicio_edicProg, &fin);
+	buffer = gtk_text_buffer_get_text (buffHoraInicio_edicProg, &inicio, &fin, FALSE); 
+	fichero << "H " << buffer << std::endl;	
+		
 	//Guardamos el contenido de los campos en un fichero
 	gtk_text_buffer_get_start_iter (buffDuracionValv1_edicProg, &inicio);
 	gtk_text_buffer_get_end_iter (buffDuracionValv1_edicProg, &fin);
