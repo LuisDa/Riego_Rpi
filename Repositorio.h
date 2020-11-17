@@ -34,6 +34,9 @@ class CRepositorio
 		void setEstadoValvula(int numValv, bool estado);
 		bool getEstadoValvula(int numValv);
 		char getDuracionValv(char num_prog, char num_valv);
+		int programaIncluido(char hora_ini, char min_ini);
+		void setProgramaActivo(int num_prog) { m_numProgramaActivo = num_prog; }
+		int getProgramaActivo() {return m_numProgramaActivo; }
 		
 				
 	private:
@@ -42,5 +45,6 @@ class CRepositorio
 		programa_riego_t* m_Programa3_p = NULL;
 		int m_IdProgramaSeleccionado = 1;
 		estado_valvulas_t* m_EstadoValvulas_p = NULL;
+		int m_numProgramaActivo = 0;
 };
 #endif

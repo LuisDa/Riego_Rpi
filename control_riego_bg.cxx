@@ -86,9 +86,25 @@ void *funcion_chequeo_hora(void* parametros)
 		struct tm* fecha_hora;
 		time(&rawtime);
 		fecha_hora = localtime(&rawtime);
+		static int prog_activo = 0;
 		
 		printf("Chequeando la hora: %d:%d:%d\n", fecha_hora->tm_hour, fecha_hora->tm_min, fecha_hora->tm_sec);
+		
+			if ((repositorio->programaIncluido(fecha_hora->tm_hour, fecha_hora->tm_min) > 0)
+				&& (repositorio->getProgramaActivo() == 0))
+			{
+				prog_activo = repositorio->programaIncluido(fecha_hora->tm_hour, fecha_hora->tm_min);
+				printf(" => Hallose programa, activando %d\n", prog_activo);
+				repositorio->setProgramaActivo(prog_activo);
+			}
+			else if (repositorio->getProgramaActivo() > 0)
+			{
+				
+			}
 		//usleep(500000);
+		
+		//Definir aquí la estructura de la secuencia de control de las válvulas
+		
 		sleep(1);
 	}
 }

@@ -243,3 +243,12 @@ char CRepositorio::getDuracionValv(char num_prog, char num_valv)
 		}
 	}	
 }
+
+int CRepositorio::programaIncluido(char hora_ini, char min_ini)
+{
+	if ((m_Programa1_p->hora_ini == hora_ini) && (m_Programa1_p->minuto_ini == min_ini)) return 1;
+	else if ((m_Programa2_p->hora_ini == hora_ini) && (m_Programa2_p->minuto_ini == min_ini)) return 2;
+	else if ((m_Programa3_p->hora_ini == hora_ini) && (m_Programa3_p->minuto_ini == min_ini)) return 3;
+	
+	return 0;	
+}
