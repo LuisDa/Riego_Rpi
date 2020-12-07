@@ -87,20 +87,86 @@ void *funcion_chequeo_hora(void* parametros)
 		time(&rawtime);
 		fecha_hora = localtime(&rawtime);
 		static int prog_activo = 0;
+		static int valv_activa = 0;
+		static unsigned int contador_tiempo_valv = 0;
 		
 		printf("Chequeando la hora: %d:%d:%d\n", fecha_hora->tm_hour, fecha_hora->tm_min, fecha_hora->tm_sec);
 		
-			if ((repositorio->programaIncluido(fecha_hora->tm_hour, fecha_hora->tm_min) > 0)
-				&& (repositorio->getProgramaActivo() == 0))
+		if ((repositorio->programaIncluido(fecha_hora->tm_hour, fecha_hora->tm_min) > 0)
+			&& (repositorio->getProgramaActivo() == 0))
+		{
+			prog_activo = repositorio->programaIncluido(fecha_hora->tm_hour, fecha_hora->tm_min);
+			printf(" => Hallose programa, activando %d\n", prog_activo);
+			repositorio->setProgramaActivo(prog_activo);
+			
+			valv_activa = 1;
+			contador_tiempo_valv = 60*(repositorio->getDuracionValv(prog_activo, valv_activa));
+		}
+		else if (repositorio->getProgramaActivo() > 0) //Ciclo de riego activo.
+		{			
+			/*
+			if (valv_activa == 0)
 			{
-				prog_activo = repositorio->programaIncluido(fecha_hora->tm_hour, fecha_hora->tm_min);
-				printf(" => Hallose programa, activando %d\n", prog_activo);
-				repositorio->setProgramaActivo(prog_activo);
+				valv_activa = 1;
+				contador_tiempo_valv = repositorio->getDuracionValv(prog_activo, valv_activa);
 			}
-			else if (repositorio->getProgramaActivo() > 0)
+			else
 			{
+			* */
+				contador_tiempo_valv--;
 				
-			}
+				printf(" => Dentro del ciclo de riego, programa %d, válvula %d, contador %d\n", prog_activo, valv_activa, contador_tiempo_valv);
+				
+				if (contador_tiempo_valv == 0)
+				{
+					if (valv_activa < 4)
+					{
+						valv_activa++;
+						contador_tiempo_valv = 60*(repositorio->getDuracionValv(prog_activo, valv_activa));
+					}
+					else
+					{
+						contador_tiempo_valv = 0;
+						repositorio->setEstadoValvula(4, false);
+						valv_activa = 0;
+						repositorio->setProgramaActivo(0);
+					}					
+					
+				}
+				
+				switch (valv_activa)
+				{
+					case 1:			
+						printf ("Activando válvula 1\n");
+						repositorio->setEstadoValvula(1, true);
+						actualizar_estado_valvulas = true;
+						break;
+					case 2:
+						printf ("Parando válvula 1 y activando válvula 2\n");
+						repositorio->setEstadoValvula(1, false);
+						repositorio->setEstadoValvula(2, true);
+						actualizar_estado_valvulas = true;
+						break;
+					case 3:
+						printf ("Parando válvula 2 y activando válvula 3\n");	
+						repositorio->setEstadoValvula(2, false);
+						repositorio->setEstadoValvula(3, true);
+						actualizar_estado_valvulas = true;
+						break;
+					case 4:
+						printf ("Parando válvula 3 y activando válvula 4\n");
+						repositorio->setEstadoValvula(3, false);
+						repositorio->setEstadoValvula(4, true);
+						actualizar_estado_valvulas = true;
+						break;
+					default:
+						printf ("Nasti de plasti\n");
+						break;
+						
+						
+				}
+			//}
+		}
 		//usleep(500000);
 		
 		//Definir aquí la estructura de la secuencia de control de las válvulas
