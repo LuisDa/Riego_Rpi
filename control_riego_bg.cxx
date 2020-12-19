@@ -106,16 +106,8 @@ void *funcion_chequeo_hora(void* parametros)
 		}
 		else if (repositorio->getProgramaActivo() > 0) //Ciclo de riego activo.
 		{			
-			/*
-			if (valv_activa == 0)
-			{
-				valv_activa = 1;
-				contador_tiempo_valv = repositorio->getDuracionValv(prog_activo, valv_activa);
-			}
-			else
-			{
-			* */
-				contador_tiempo_valv--;
+
+				if (contador_tiempo_valv > 0) contador_tiempo_valv--;
 				
 				printf(" => Dentro del ciclo de riego, programa %d, válvula %d, contador %d\n", prog_activo, valv_activa, contador_tiempo_valv);
 				
@@ -123,9 +115,11 @@ void *funcion_chequeo_hora(void* parametros)
 				{
 					if (valv_activa < 4)
 					{
-						valv_activa++;
+						CONMUTAR_VALVULA : valv_activa++;
 						contador_tiempo_valv = 60*(repositorio->getDuracionValv(prog_activo, valv_activa));
-						activar_valvula = true;
+												
+						if (contador_tiempo_valv > 0) activar_valvula = true;
+						else goto CONMUTAR_VALVULA;
 					}
 					else
 					{
@@ -154,13 +148,16 @@ void *funcion_chequeo_hora(void* parametros)
 							actualizar_estado_valvulas = true;
 							break;
 						case 3:
-							printf ("Parando válvula 2 y activando válvula 3\n");	
+							printf ("Parando válvulas 1 y 2 y activando válvula 3\n");	
+							repositorio->setEstadoValvula(1, false);
 							repositorio->setEstadoValvula(2, false);
 							repositorio->setEstadoValvula(3, true);
 							actualizar_estado_valvulas = true;
 							break;
 						case 4:
-							printf ("Parando válvula 3 y activando válvula 4\n");
+							printf ("Parando válvulas 1,2 y 3 y activando válvulas 4\n");
+							repositorio->setEstadoValvula(1, false);
+							repositorio->setEstadoValvula(2, false);
 							repositorio->setEstadoValvula(3, false);
 							repositorio->setEstadoValvula(4, true);
 							actualizar_estado_valvulas = true;
