@@ -282,6 +282,11 @@ int main (int argc, char* argv[])
 					repositorio->setEstadoValvula(5, false);
 					break;
 				
+				case 0x20:
+					printf("Recargando repositorio\n");
+					repositorio->refrescarProgramas();
+					break;
+				
 				case 0xFF: //Aquí nunca entra, porque el valor de complete está a 1 y se sale del bucle antes
 					printf("Finalizando servidor \n"); 
 					ejecutar_hebra_chequeo_hora = false;

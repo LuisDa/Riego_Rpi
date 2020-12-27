@@ -37,6 +37,7 @@ class CRepositorio
 		int programaIncluido(char hora_ini, char min_ini);
 		void setProgramaActivo(int num_prog) { m_numProgramaActivo = num_prog; }
 		int getProgramaActivo() {return m_numProgramaActivo; }
+		void refrescarProgramas();
 		
 				
 	private:

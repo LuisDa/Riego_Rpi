@@ -81,6 +81,10 @@ int main(int argc, char *argv[]) {
 	   {
 		   shmp->comando = 0xFF;
 		   shmp->complete = 1;
+	   }
+	   else if (strcmp(argv[1], "r") == 0) //recargar repositorio
+	   {
+		   shmp->comando = 0x20;		   
 	   }	   
    }
    else if (argc == 3)
