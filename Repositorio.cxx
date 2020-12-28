@@ -176,6 +176,30 @@ void CRepositorio::setHoraInicio(char num_prog, char hora, char min)
 	}
 }
 
+char CRepositorio::getHoraInicio(char num_prog)
+{
+	switch(num_prog)
+	{
+		case 1: return m_Programa1_p->hora_ini;
+		case 2: return m_Programa2_p->hora_ini;
+		case 3: return m_Programa3_p->hora_ini;		
+	}
+	
+	return 0;
+}
+
+char CRepositorio::getMinutoInicio(char num_prog)
+{
+	switch(num_prog)
+	{
+		case 1: return m_Programa1_p->minuto_ini;
+		case 2: return m_Programa2_p->minuto_ini;
+		case 3: return m_Programa3_p->minuto_ini;		
+	}
+	
+	return 0;	
+}
+
 void CRepositorio::setDuracionValv(char num_prog, char num_valv, char duracion)
 {
 	//programa_riego_t* programa = (m_Programa1_p) + (sizeof(programa_riego_t) + (num_prog - 1));

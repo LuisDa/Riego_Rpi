@@ -38,6 +38,7 @@ void configurar_ventana_prog_riego(void)
 {
 	//char* campo_valv = " ";
 	char campo_valv[3];
+	char campo_hora_ini[6];
 	
 	hboxVentana_edicProg = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
 	vboxEtiquetas_edicProg = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
@@ -95,7 +96,13 @@ void configurar_ventana_prog_riego(void)
 	gtk_widget_set_size_request(campoHoraInicio_edicProg, 80, 20);
 	gtk_box_pack_start (GTK_BOX(vboxCampos_edicProg), campoHoraInicio_edicProg, FALSE, FALSE, 0);
 	gtk_widget_show (campoHoraInicio_edicProg);
-	gtk_text_buffer_set_text (buffHoraInicio_edicProg, "00:00", -1);
+	
+	char hora_inicio = repositorio->getHoraInicio(repositorio->getIdProgramaSeleccionado());
+	char min_inicio = repositorio->getMinutoInicio(repositorio->getIdProgramaSeleccionado());
+	sprintf(campo_hora_ini, "%d:%d\0", hora_inicio, min_inicio);
+	
+	//gtk_text_buffer_set_text (buffHoraInicio_edicProg, "00:00", -1);
+	gtk_text_buffer_set_text (buffHoraInicio_edicProg, (const char*)campo_hora_ini, -1);
 	//gtk_fixed_put(GTK_FIXED(fixed), m_campoHoraInicio, 100, 100);	
 	
 	campoDuracionValv1_edicProg = gtk_text_view_new();

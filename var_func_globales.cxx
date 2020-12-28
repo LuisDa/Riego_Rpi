@@ -12,9 +12,6 @@ volatile bool ejecutar_hebra_2 = true;
 
 volatile bool conmutar_color = false;
 
-const char* etiquetas_botones[10] = {"Button_1", "Button_2", "Button_3", "Button_4", "Button_5", "Button_6", "Button_7", "Button_8", "Button_9", "Button_10"};
-const char* id_botones[10] = {"button_1", "button_2", "button_3", "button_4", "button_5", "button_6", "button_7", "button_8", "button_9", "button_10"};
-
 const char* titulo_ventana_prog_riego = "Editar programa de riego";
 CRepositorio *repositorio = 0;
 
@@ -46,16 +43,16 @@ void callback_botones (GtkWidget *widget, gpointer data )
 {
 	g_print ("Botón %s fue pulsado\n", (gchar*)data);
 	
-	if (strcmp((gchar*)data, "button_1") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_11, HIGH);
-	else if (strcmp((gchar*)data, "button_2") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_13, HIGH);
-	else if (strcmp((gchar*)data, "button_3") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, HIGH);
-	else if (strcmp((gchar*)data, "button_4") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, HIGH);
-	else if (strcmp((gchar*)data, "button_5") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, HIGH);
-	else if (strcmp((gchar*)data, "button_6") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_11, LOW);
-	else if (strcmp((gchar*)data, "button_7") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_13, LOW);
-	else if (strcmp((gchar*)data, "button_8") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
-	else if (strcmp((gchar*)data, "button_9") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);
-	else if (strcmp((gchar*)data, "button_10") == 0) bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);
+	if (strcmp((gchar*)data, "button_1") == 0) {shmem_p->comando = 0x11; shmem_p->complete = 0; shmem_p->enviado = 1;} /*bcm2835_gpio_write(RPI_V2_GPIO_P1_11, HIGH);*/
+	else if (strcmp((gchar*)data, "button_2") == 0) {shmem_p->comando = 0x12; shmem_p->complete = 0; shmem_p->enviado = 1;}/*bcm2835_gpio_write(RPI_V2_GPIO_P1_13, HIGH);*/
+	else if (strcmp((gchar*)data, "button_3") == 0) {shmem_p->comando = 0x13; shmem_p->complete = 0; shmem_p->enviado = 1;}/*bcm2835_gpio_write(RPI_V2_GPIO_P1_33, HIGH);*/
+	else if (strcmp((gchar*)data, "button_4") == 0) {shmem_p->comando = 0x14; shmem_p->complete = 0; shmem_p->enviado = 1;}/*bcm2835_gpio_write(RPI_V2_GPIO_P1_35, HIGH);*/
+	else if (strcmp((gchar*)data, "button_5") == 0) {shmem_p->comando = 0x15; shmem_p->complete = 0; shmem_p->enviado = 1;}/*bcm2835_gpio_write(RPI_V2_GPIO_P1_37, HIGH);*/
+	else if (strcmp((gchar*)data, "button_6") == 0) {shmem_p->comando = 0x01; shmem_p->complete = 0; shmem_p->enviado = 1;} /*bcm2835_gpio_write(RPI_V2_GPIO_P1_11, LOW);*/
+	else if (strcmp((gchar*)data, "button_7") == 0) {shmem_p->comando = 0x02; shmem_p->complete = 0; shmem_p->enviado = 1;} /*bcm2835_gpio_write(RPI_V2_GPIO_P1_13, LOW);*/
+	else if (strcmp((gchar*)data, "button_8") == 0) {shmem_p->comando = 0x03; shmem_p->complete = 0; shmem_p->enviado = 1;}/*bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);*/
+	else if (strcmp((gchar*)data, "button_9") == 0) {shmem_p->comando = 0x04; shmem_p->complete = 0; shmem_p->enviado = 1;} /*bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);*/
+	else if (strcmp((gchar*)data, "button_10") == 0) {shmem_p->comando = 0x05; shmem_p->complete = 0; shmem_p->enviado = 1;} /*bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);*/
 	else if (strcmp((gchar*)data, "edit_programa") == 0)
 	{		
 		if (habilitar_edicion_programa)
@@ -96,62 +93,62 @@ void inicializar_GPIO(void)
 
 void configurar_botones(void)
 {
-	button = gtk_button_new_with_label ("Button_1");		
+	button = gtk_button_new_with_label ("Válvula 1 ON");		
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_1");
 	gtk_box_pack_start (GTK_BOX(box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
 		
-	button = gtk_button_new_with_label ("Button_2");
+	button = gtk_button_new_with_label ("Válvula 2 ON");
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_2");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
 
-	button = gtk_button_new_with_label ("Button_3");
+	button = gtk_button_new_with_label ("Válvula 3 ON");
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_3");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);	
 
-	button = gtk_button_new_with_label ("Button_4");
+	button = gtk_button_new_with_label ("Válvula 4 ON");
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_4");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);	
 	
-	button = gtk_button_new_with_label ("Button_5");
+	button = gtk_button_new_with_label ("Válvula M ON");
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_5");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);	
 	
 	
-	button = gtk_button_new_with_label ("Button_6");
+	button = gtk_button_new_with_label ("Válvula 1 OFF");
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_6");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
 	
-	button = gtk_button_new_with_label ("Button_7");
+	button = gtk_button_new_with_label ("Válvula 2 OFF");
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_7");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
 	gtk_widget_show (button);
 
-	button = gtk_button_new_with_label ("Button_8");
+	button = gtk_button_new_with_label ("Válvula 3 OFF");
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_8");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
 	gtk_widget_show (button);
 	
-	button = gtk_button_new_with_label ("Button_9");
+	button = gtk_button_new_with_label ("Válvula 4 OFF");
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_9");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
 	gtk_widget_show (button);
 	
-	button = gtk_button_new_with_label ("Button_10");
+	button = gtk_button_new_with_label ("Válvula M OFF");
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_10");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
@@ -230,7 +227,7 @@ void configurar_areas_dibujo(void)
 void configurar_marco_ventana_ppal(void)
 {
 	ventana_ppal = gtk_window_new (GTK_WINDOW_TOPLEVEL);	
-	gtk_window_set_title (GTK_WINDOW (ventana_ppal), "GÜINDOU");
+	gtk_window_set_title (GTK_WINDOW (ventana_ppal), "Interfaz de configuración de riego");
 	gtk_window_set_default_size(GTK_WINDOW(ventana_ppal), 600, 500);		//Size of the the client area (excluding the additional areas provided by the window manager)
 	gtk_window_set_position(GTK_WINDOW(ventana_ppal), GTK_WIN_POS_CENTER);
 		

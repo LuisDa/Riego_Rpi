@@ -12,9 +12,6 @@ volatile bool ejecutar_hebra_2 = true;
 
 volatile bool conmutar_color = false;
 
-const char* etiquetas_botones[10] = {"Button_1", "Button_2", "Button_3", "Button_4", "Button_5", "Button_6", "Button_7", "Button_8", "Button_9", "Button_10"};
-const char* id_botones[10] = {"button_1", "button_2", "button_3", "button_4", "button_5", "button_6", "button_7", "button_8", "button_9", "button_10"};
-
 const char* titulo_ventana_prog_riego = "Editar programa de riego";
 CRepositorio *repositorio = 0;
 
@@ -86,62 +83,62 @@ void inicializar_GPIO(void)
 
 void configurar_botones(void)
 {
-	button = gtk_button_new_with_label ("Button_1");		
+	button = gtk_button_new_with_label ("Válvula 1 ON");		
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_1");
 	gtk_box_pack_start (GTK_BOX(box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
 		
-	button = gtk_button_new_with_label ("Button_2");
+	button = gtk_button_new_with_label ("Válvula 2 ON");
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_2");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
 
-	button = gtk_button_new_with_label ("Button_3");
+	button = gtk_button_new_with_label ("Válvula 3 ON");
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_3");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);	
 
-	button = gtk_button_new_with_label ("Button_4");
+	button = gtk_button_new_with_label ("Válvula 4 ON");
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_4");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);	
 	
-	button = gtk_button_new_with_label ("Button_5");
+	button = gtk_button_new_with_label ("Válvula M ON");
 	gtk_widget_set_size_request(button,2,2);		
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_5");
 	gtk_box_pack_start(GTK_BOX (box1), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);	
 	
 	
-	button = gtk_button_new_with_label ("Button_6");
+	button = gtk_button_new_with_label ("Válvula 1 OFF");
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_6");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);
 	gtk_widget_show (button);
 	
-	button = gtk_button_new_with_label ("Button_7");
+	button = gtk_button_new_with_label ("Válvula 2 OFF");
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_7");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
 	gtk_widget_show (button);
 
-	button = gtk_button_new_with_label ("Button_8");
+	button = gtk_button_new_with_label ("Válvula 3 OFF");
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_8");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
 	gtk_widget_show (button);
 	
-	button = gtk_button_new_with_label ("Button_9");
+	button = gtk_button_new_with_label ("Válvula 4 OFF");
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_9");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		
 	gtk_widget_show (button);
 	
-	button = gtk_button_new_with_label ("Button_10");
+	button = gtk_button_new_with_label ("Válvula M OFF");
 	gtk_widget_set_size_request(button,2,2);	
 	g_signal_connect (G_OBJECT (button), "clicked", G_CALLBACK (callback_botones), (gpointer) "button_10");
 	gtk_box_pack_start(GTK_BOX (box2), button, FALSE, FALSE, 0);		

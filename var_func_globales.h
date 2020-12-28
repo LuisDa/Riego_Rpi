@@ -23,9 +23,6 @@ extern volatile bool ejecutar_hebra_2;// = true;
 
 extern volatile bool conmutar_color;// = false;
 
-extern const char* etiquetas_botones[10];// = {"Button_1", "Button_2", "Button_3", "Button_4", "Button_5", "Button_6", "Button_7", "Button_8", "Button_9", "Button_10"};
-extern const char* id_botones[10];// = {"button_1", "button_2", "button_3", "button_4", "button_5", "button_6", "button_7", "button_8", "button_9", "button_10"};
-
 extern const char* titulo_ventana_prog_riego;// = "Editar programa de riego";
 
 extern volatile bool habilitar_edicion_programa;

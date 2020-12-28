@@ -28,6 +28,8 @@ class CRepositorio
 		CRepositorio();
 		~CRepositorio();
 		void setHoraInicio(char num_prog, char hora, char min);
+		char getHoraInicio(char num_prog);
+		char getMinutoInicio(char num_prog);
 		void setDuracionValv(char num_prog, char num_valv, char duracion);
 		void setIdProgramaSeleccionado(int id) { m_IdProgramaSeleccionado = id; }
 		int getIdProgramaSeleccionado() {return m_IdProgramaSeleccionado; }
