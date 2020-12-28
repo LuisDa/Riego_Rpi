@@ -29,10 +29,15 @@
 #include <time.h>
 #include <math.h>
 #include <sys/sem.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/types.h>
 #include <pthread.h>
 #include <string.h>
 #include "var_func_globales.h"
 //#include "ProgramaRiegoDlg.h"
+
+#define SHM_KEY 0x1234
 
 #define PIN RPI_GPIO_P1_12
 
@@ -229,6 +234,21 @@ int main(int argc, char **argv)
 	if (pthread_create(&hebra1, NULL, funcion_hebra1, (void *)&hebra1) != 0) printf("No se pudo crear hebra_1\n");
 	if (pthread_create(&hebra2, NULL, funcion_hebra2, (void *)&hebra2) != 0) printf("No se pudo crear hebra_2\n");
 
+	/*Inicializamos la memoria compartida*/
+	shmid = shmget(SHM_KEY, sizeof(struct shmseg), 0644|IPC_CREAT);
+	
+	if (shmid == -1) {
+		perror("Shared memory");
+		return 1;
+	}
+	
+	shmem_p = (shmseg*) shmat(shmid, NULL, 0);
+   
+	if (shmem_p == (void *) -1) {
+		perror("Shared memory attach");
+		return 1;
+	}	
+
 	/*Inicializamos GPIO*/	
 	inicializar_GPIO();	
 	
@@ -264,6 +284,12 @@ int main(int argc, char **argv)
 	g_print("Ejecutando bcm2835_close\n");
 	bcm2835_close();
 	g_print("Fin ejecución bcm2835_close\n");
+	
+	//Liberación de memoria compartida
+	if (shmdt(shmem_p) == -1) {
+		perror("shmdt");
+		return 1;
+	}
 	
 	//Finalizando, liberamos el repositorio
 	delete repositorio;

@@ -8,6 +8,13 @@
 #include "libcomms/include/message_sender.hpp"
 #include "libcomms/include/message_receiver.hpp"
 
+struct shmseg {
+   int cnt;
+   int enviado;
+   int complete;  
+   char comando;
+};
+
 extern CMessageSender* emisor_local;
 extern CMessageReceiver* receptor_local;
 
@@ -65,6 +72,10 @@ extern GtkWidget *box3;
 extern GtkWidget *box4;
 extern GtkWidget *box5;
 extern GtkWidget *hbox;
+
+//Variables relacionadas con la memoria compartida
+extern int shmid;
+extern struct shmseg *shmem_p;
 
 //Funciones relativas al GUI, ventana principal
 void inicializar_GUI(void);

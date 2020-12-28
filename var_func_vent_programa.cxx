@@ -221,6 +221,11 @@ void callback_boton_aplicar(GtkWidget *widget, gpointer data)
 	fichero.close();
 	
 	habilitar_edicion_programa = true;
+
+	//Enviamos comando de refresco de repositorio por memoria compartida
+	shmem_p->comando = 0x20;	
+	shmem_p->complete = 0;
+	shmem_p->enviado = 1;
 	
 	gtk_widget_destroy(ventana_edic_programa);
 

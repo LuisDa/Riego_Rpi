@@ -37,6 +37,11 @@ GtkWidget *box4;
 GtkWidget *box5;
 GtkWidget *hbox;
 
+//Variables relacionadas con la memoria compartida
+int shmid;
+struct shmseg *shmem_p;
+
+
 void callback_botones (GtkWidget *widget, gpointer data )
 {
 	g_print ("Botón %s fue pulsado\n", (gchar*)data);
