@@ -190,9 +190,15 @@ void callback_boton_aplicar(GtkWidget *widget, gpointer data)
 
 	ofstream fichero;
 	
+	/*
 	if (repositorio->getIdProgramaSeleccionado() == 1) fichero.open("programa_1.txt");
 	else if (repositorio->getIdProgramaSeleccionado() == 2) fichero.open("programa_2.txt");
 	else if (repositorio->getIdProgramaSeleccionado() == 3) fichero.open("programa_3.txt");
+	*/
+	
+	if (programa_seleccionado == 0) fichero.open("programa_1.txt");
+	else if (programa_seleccionado == 1) fichero.open("programa_2.txt");
+	else if (programa_seleccionado == 2) fichero.open("programa_3.txt");
 		
 	//Guardamos en primer lugar la hora de inicio	//buffHoraInicio_edicProg
 	gtk_text_buffer_get_start_iter (buffHoraInicio_edicProg, &inicio);

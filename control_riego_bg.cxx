@@ -29,8 +29,7 @@ volatile bool ejecutar_hebra_chequeo_hora = true;
 struct shmseg {
    int cnt;
    int enviado;
-   int complete;
-   //char buf[BUF_SIZE];
+   int complete;   
    char comando;
 };
 
@@ -243,48 +242,59 @@ int main (int argc, char* argv[])
 				case 0x11: 
 					printf("Activando válvula 1\n"); 
 					repositorio->setEstadoValvula(1, true);
+					actualizar_estado_valvulas = true;
 					break;
 				case 0x12: 
 					printf("Activando válvula 2\n"); 
 					repositorio->setEstadoValvula(2, true);
+					actualizar_estado_valvulas = true;
 					break;
 				case 0x13: 
 					printf("Activando válvula 3\n"); 
 					repositorio->setEstadoValvula(3, true);
+					actualizar_estado_valvulas = true;
 					break;
 				case 0x14: 
 					printf("Activando válvula 4\n"); 
 					repositorio->setEstadoValvula(4, true);
+					actualizar_estado_valvulas = true;
 					break;
 				case 0x15: 
 					printf("Activando válvula M\n"); 
 					repositorio->setEstadoValvula(5, true);
+					actualizar_estado_valvulas = true;
 					break;
 							
 				case 0x01: 
 					printf("Desactivando válvula 1\n"); 
 					repositorio->setEstadoValvula(1, false);
+					actualizar_estado_valvulas = true;
 					break;
 				case 0x02: 
 					printf("Desactivando válvula 2\n"); 
 					repositorio->setEstadoValvula(2, false);
+					actualizar_estado_valvulas = true;
 					break;
 				case 0x03: 
 					printf("Desactivando válvula 3\n"); 
 					repositorio->setEstadoValvula(3, false);
+					actualizar_estado_valvulas = true;
 					break;
 				case 0x04: 
 					printf("Desactivando válvula 4\n"); 
 					repositorio->setEstadoValvula(4, false);
+					actualizar_estado_valvulas = true;
 					break;
 				case 0x05: 
 					printf("Desactivando válvula M\n"); 
 					repositorio->setEstadoValvula(5, false);
+					actualizar_estado_valvulas = true;
 					break;
 				
 				case 0x20:
 					printf("Recargando repositorio\n");
 					repositorio->refrescarProgramas();
+					actualizar_estado_valvulas = false;
 					break;
 				
 				case 0xFF: //Aquí nunca entra, porque el valor de complete está a 1 y se sale del bucle antes
@@ -297,7 +307,7 @@ int main (int argc, char* argv[])
 				
 			}
 			
-			actualizar_estado_valvulas = true;
+			//actualizar_estado_valvulas = true;
 			
 			
 			printf("Reading Process: Shared Memory: Read %d bytes\n", shmp->cnt);

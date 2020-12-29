@@ -30,6 +30,8 @@ extern volatile bool habilitar_edicion_programa;
 extern CRepositorio *repositorio;// = 0;
 extern char prueba;
 
+extern char programa_seleccionado;
+
 //Variables GUI ventana principal
 extern GtkWidget *ventana_ppal;
 extern GtkWidget *button;

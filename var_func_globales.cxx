@@ -4,6 +4,8 @@
 
 char prueba = '0';
 
+char programa_seleccionado = 0;
+
 CMessageSender* emisor_local;
 CMessageReceiver* receptor_local;
 
@@ -43,16 +45,16 @@ void callback_botones (GtkWidget *widget, gpointer data )
 {
 	g_print ("Botón %s fue pulsado\n", (gchar*)data);
 	
-	if (strcmp((gchar*)data, "button_1") == 0) {shmem_p->comando = 0x11; shmem_p->complete = 0; shmem_p->enviado = 1;} /*bcm2835_gpio_write(RPI_V2_GPIO_P1_11, HIGH);*/
-	else if (strcmp((gchar*)data, "button_2") == 0) {shmem_p->comando = 0x12; shmem_p->complete = 0; shmem_p->enviado = 1;}/*bcm2835_gpio_write(RPI_V2_GPIO_P1_13, HIGH);*/
-	else if (strcmp((gchar*)data, "button_3") == 0) {shmem_p->comando = 0x13; shmem_p->complete = 0; shmem_p->enviado = 1;}/*bcm2835_gpio_write(RPI_V2_GPIO_P1_33, HIGH);*/
-	else if (strcmp((gchar*)data, "button_4") == 0) {shmem_p->comando = 0x14; shmem_p->complete = 0; shmem_p->enviado = 1;}/*bcm2835_gpio_write(RPI_V2_GPIO_P1_35, HIGH);*/
-	else if (strcmp((gchar*)data, "button_5") == 0) {shmem_p->comando = 0x15; shmem_p->complete = 0; shmem_p->enviado = 1;}/*bcm2835_gpio_write(RPI_V2_GPIO_P1_37, HIGH);*/
-	else if (strcmp((gchar*)data, "button_6") == 0) {shmem_p->comando = 0x01; shmem_p->complete = 0; shmem_p->enviado = 1;} /*bcm2835_gpio_write(RPI_V2_GPIO_P1_11, LOW);*/
-	else if (strcmp((gchar*)data, "button_7") == 0) {shmem_p->comando = 0x02; shmem_p->complete = 0; shmem_p->enviado = 1;} /*bcm2835_gpio_write(RPI_V2_GPIO_P1_13, LOW);*/
-	else if (strcmp((gchar*)data, "button_8") == 0) {shmem_p->comando = 0x03; shmem_p->complete = 0; shmem_p->enviado = 1;}/*bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);*/
-	else if (strcmp((gchar*)data, "button_9") == 0) {shmem_p->comando = 0x04; shmem_p->complete = 0; shmem_p->enviado = 1;} /*bcm2835_gpio_write(RPI_V2_GPIO_P1_35, LOW);*/
-	else if (strcmp((gchar*)data, "button_10") == 0) {shmem_p->comando = 0x05; shmem_p->complete = 0; shmem_p->enviado = 1;} /*bcm2835_gpio_write(RPI_V2_GPIO_P1_37, LOW);*/
+	if (strcmp((gchar*)data, "button_1") == 0) {shmem_p->comando = 0x11; shmem_p->complete = 0; shmem_p->enviado = 1;} 
+	else if (strcmp((gchar*)data, "button_2") == 0) {shmem_p->comando = 0x12; shmem_p->complete = 0; shmem_p->enviado = 1;}
+	else if (strcmp((gchar*)data, "button_3") == 0) {shmem_p->comando = 0x13; shmem_p->complete = 0; shmem_p->enviado = 1;}
+	else if (strcmp((gchar*)data, "button_4") == 0) {shmem_p->comando = 0x14; shmem_p->complete = 0; shmem_p->enviado = 1;}
+	else if (strcmp((gchar*)data, "button_5") == 0) {shmem_p->comando = 0x15; shmem_p->complete = 0; shmem_p->enviado = 1;}
+	else if (strcmp((gchar*)data, "button_6") == 0) {shmem_p->comando = 0x01; shmem_p->complete = 0; shmem_p->enviado = 1;}
+	else if (strcmp((gchar*)data, "button_7") == 0) {shmem_p->comando = 0x02; shmem_p->complete = 0; shmem_p->enviado = 1;}
+	else if (strcmp((gchar*)data, "button_8") == 0) {shmem_p->comando = 0x03; shmem_p->complete = 0; shmem_p->enviado = 1;}
+	else if (strcmp((gchar*)data, "button_9") == 0) {shmem_p->comando = 0x04; shmem_p->complete = 0; shmem_p->enviado = 1;}
+	else if (strcmp((gchar*)data, "button_10") == 0) {shmem_p->comando = 0x05; shmem_p->complete = 0; shmem_p->enviado = 1;}
 	else if (strcmp((gchar*)data, "edit_programa") == 0)
 	{		
 		if (habilitar_edicion_programa)
@@ -349,11 +351,12 @@ gboolean draw_callback (GtkWidget *widget, cairo_t *cr, gpointer data)
 void selected_event_callback (GtkListBox *list_box, GtkListBoxRow *row, gpointer data)
 {
 	GtkListBoxRow *listBoxRow = (GtkListBoxRow*)gtk_list_box_get_selected_row (list_box);
-	int prog_seleccionado = gtk_list_box_row_get_index(listBoxRow);
-	repositorio->setIdProgramaSeleccionado(prog_seleccionado+1);
+	//int prog_seleccionado = gtk_list_box_row_get_index(listBoxRow);
+	programa_seleccionado = (char)gtk_list_box_row_get_index(listBoxRow);
+	repositorio->setIdProgramaSeleccionado(programa_seleccionado+1);
 	
 	//g_print("Seleccionada línea en lista, gafas\n");
-	printf("Seleccionada línea %d en lista, gafas\n", prog_seleccionado);
+	printf("Seleccionada línea %d en lista, gafas\n", programa_seleccionado);
 }
 
 
