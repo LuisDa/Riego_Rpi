@@ -62,7 +62,7 @@ void configurar_ventana_prog_riego(void)
 	gtk_label_set_justify(GTK_LABEL(etiquetaHoraInicio_edicProg), GTK_JUSTIFY_RIGHT);
 	gtk_box_pack_start (GTK_BOX(vboxEtiquetas_edicProg), etiquetaHoraInicio_edicProg, FALSE, FALSE, 0);
 	gtk_widget_show (etiquetaHoraInicio_edicProg);
-		
+			
 	etiquetaDuracionValv1_edicProg = gtk_label_new(NULL);
 	gtk_widget_set_size_request(etiquetaDuracionValv1_edicProg,2,2);
 	gtk_label_set_markup(GTK_LABEL(etiquetaDuracionValv1_edicProg), "Duración valv. 1 (min)");
@@ -205,6 +205,10 @@ void callback_boton_aplicar(GtkWidget *widget, gpointer data)
 	gtk_text_buffer_get_end_iter (buffHoraInicio_edicProg, &fin);
 	buffer = gtk_text_buffer_get_text (buffHoraInicio_edicProg, &inicio, &fin, FALSE); 
 	fichero << "H " << buffer << std::endl;	
+	
+	//Actualizamos hora y minuto en el repositorio	
+	string str_hora_ini(buffer);
+	repositorio->actualizarHoraInicio(str_hora_ini, (programa_seleccionado+1));
 		
 	//Guardamos el contenido de los campos en un fichero
 	gtk_text_buffer_get_start_iter (buffDuracionValv1_edicProg, &inicio);

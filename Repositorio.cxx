@@ -1,10 +1,10 @@
 #include "Repositorio.h"
 #include <iostream>
 #include <fstream>
-#include <string>
+//#include <string>
 #include <bits/stdc++.h>
 
-using namespace std;
+//using namespace std;
 
 
 CRepositorio::CRepositorio()
@@ -279,4 +279,33 @@ int CRepositorio::programaIncluido(char hora_ini, char min_ini)
 	else if ((m_Programa3_p->hora_ini == hora_ini) && (m_Programa3_p->minuto_ini == min_ini)) return 3;
 	
 	return 0;	
+}
+
+
+void CRepositorio::actualizarHoraInicio(string str_hora, char num_prog)
+{
+	vector<string> subtokens;
+	stringstream check(str_hora);
+	string str_aux;
+	
+	while(getline(check, str_aux, ':')) { subtokens.push_back(str_aux); }
+	
+	switch (num_prog)
+	{
+		case 1:
+			m_Programa1_p->hora_ini = atoi((char*)subtokens[0].c_str());
+			m_Programa1_p->minuto_ini = atoi((char*)subtokens[1].c_str());
+			break;
+		case 2:	
+			m_Programa2_p->hora_ini = atoi((char*)subtokens[0].c_str());
+			m_Programa2_p->minuto_ini = atoi((char*)subtokens[1].c_str());
+			break;
+		case 3:	
+			m_Programa3_p->hora_ini = atoi((char*)subtokens[0].c_str());
+			m_Programa3_p->minuto_ini = atoi((char*)subtokens[1].c_str());
+			break;		
+		default: 
+			break;
+	}
+	
 }

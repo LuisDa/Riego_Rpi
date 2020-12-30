@@ -60,7 +60,7 @@ void *funcion_hebra_control_valvulas(void* parametros)
 			if (repositorio->getEstadoValvula(2) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_13, HIGH);
 			else bcm2835_gpio_write(RPI_V2_GPIO_P1_13, LOW);		
 			
-			if (repositorio->getEstadoValvula(3) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, HIGH);
+			if (repositorio->getEstadoValvula(3) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_33, HIGH);			
 			else bcm2835_gpio_write(RPI_V2_GPIO_P1_33, LOW);
 			
 			if (repositorio->getEstadoValvula(4) == true) bcm2835_gpio_write(RPI_V2_GPIO_P1_35, HIGH);
@@ -222,6 +222,14 @@ int main (int argc, char* argv[])
 		perror("Shared memory attach");
 		return 1;
 	}
+	
+	//Inicializamos las salidas a cero (por si la inicialización es errática y se activa por error alguna que no debe)
+	repositorio->setEstadoValvula(1, false);
+	repositorio->setEstadoValvula(2, false);
+	repositorio->setEstadoValvula(3, false);
+	repositorio->setEstadoValvula(4, false);
+	repositorio->setEstadoValvula(5, false);
+	actualizar_estado_valvulas = true;
 	
 	
 	   /* Transfer blocks of data from shared memory to stdout*/

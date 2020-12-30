@@ -1,7 +1,10 @@
 #ifndef REPOSITORIO_H
 #define REPOSITORIO_H
 
+#include <string>
 #include <stdlib.h>
+
+using namespace std;
 
 class CRepositorio
 {
@@ -39,8 +42,8 @@ class CRepositorio
 		int programaIncluido(char hora_ini, char min_ini);
 		void setProgramaActivo(int num_prog) { m_numProgramaActivo = num_prog; }
 		int getProgramaActivo() {return m_numProgramaActivo; }
-		void refrescarProgramas();
-		
+		void refrescarProgramas();	
+		void actualizarHoraInicio(string str_hora, char num_prog);
 				
 	private:
 		programa_riego_t* m_Programa1_p = NULL;
