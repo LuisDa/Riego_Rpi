@@ -12,6 +12,9 @@
 #include <bcm2835.h>
 #include "Repositorio.h"
 
+#include "libcomms/include/message_sender.hpp"
+#include "libcomms/include/message_receiver.hpp"
+
 #define BUF_SIZE 10
 #define SHM_KEY 0x1234
 //#define PRUEBA_BYTE_SIMPLE //Con esto no funciona
@@ -21,9 +24,12 @@
 CRepositorio* repositorio = NULL;
 pthread_t hebra_control_GPIO;
 pthread_t hebra_chequeo_hora;
+pthread_t hebra_ethernet;
 volatile bool actualizar_estado_valvulas = false;
 volatile bool ejecutar_hebra_control_valvulas = true;
 volatile bool ejecutar_hebra_chequeo_hora = true;
+volatile bool ejecutar_hebra_ethernet = true;
+CMessageReceiver *receptorUDP = NULL;
 
 
 struct shmseg {
@@ -180,6 +186,72 @@ void *funcion_chequeo_hora(void* parametros)
 	}
 }
 
+void *funcion_mensajes_ethernet(void* parametros)
+{
+	char* ipAddr = "127.0.0.1";
+	sockaddr_in* sdrInfo_p = NULL;
+	char* netIf = "lo";
+	char* mens_recibido = NULL;
+	char mens_respuesta[23];
+	
+	ipAddr = "192.168.1.63";
+	netIf = "eth0";
+	
+	//ipAddr = "192.168.1.146";	
+	//netIf = "wlan0";
+	
+	receptorUDP = new CMessageReceiver(4600, netIf);
+	
+	do {
+		//Iniciar el receptor, escuchando en el puerto pasado como parámetro		
+		//CMessageReceiver *cMsgRcv = new CMessageReceiver(4600, netIf);
+		printf("<HEBRA 1> Esperando recibir mensaje Ethernet...\n");
+		receptorUDP -> receiveMessage(ejecutar_hebra_ethernet); //FIXME: Si cerramos la aplicación y está a la espera... Tostose.
+		printf("<HEBRA 1> Recibiose\n");
+		sdrInfo_p = receptorUDP -> getSenderInformation();
+		printf("INFO DEL EMISOR, CON PUNTEROS: IP = %s, PORT = %d\n",
+						inet_ntoa(sdrInfo_p -> sin_addr), ntohs(sdrInfo_p -> sin_port));
+		int portSdr = ntohs(sdrInfo_p -> sin_port);
+		ipAddr = inet_ntoa(sdrInfo_p -> sin_addr);
+		mens_recibido = receptorUDP->getReceivedMessage();	
+		
+		printf("********** Mensaje recibido, visto desde la hebra: %s\n", mens_recibido);	
+		
+		//delete cMsgRcv;
+		
+		//Procesamos el mensaje
+		if (mens_recibido[0] == 'a') 
+		{
+			repositorio->setEstadoValvula(mens_recibido[1], true);
+			actualizar_estado_valvulas = true;
+		}
+		else if (mens_recibido[0] == 'd') 
+		{			
+			repositorio->setEstadoValvula(mens_recibido[1], false);
+			actualizar_estado_valvulas = true;
+		}
+		//Medida de distancia con la Arduino Ethernet
+		else if (mens_recibido[0] == 'm')
+		{
+			unsigned int distancia = (mens_recibido[1] << 8) + mens_recibido[2];
+			
+			printf("Distancia medida: %d\n", distancia);
+		}
+		
+		usleep(1000000);
+		//delete cMsgRcv;
+		
+		//Construir un emisor que envíe la respuesta.
+		CMessageSender *cMsgSdr = new CMessageSender(ipAddr, portSdr, netIf);
+		sprintf(mens_respuesta, "%s válvula %d", (mens_recibido[0] == 'a')?"Activada":"Desactivada", mens_recibido[1]);
+		mens_respuesta[22] = 0;
+		cMsgSdr -> sendMessage(mens_respuesta, false);
+		
+		//delete cMsgRcv;
+		delete cMsgSdr;
+	} while (ejecutar_hebra_ethernet); 	
+}
+
 int main (int argc, char* argv[])
 {
 	int shmid;
@@ -198,6 +270,11 @@ int main (int argc, char* argv[])
 	if (pthread_create(&hebra_chequeo_hora, NULL, funcion_chequeo_hora, (void *)&hebra_chequeo_hora) != 0)
 	{
 		printf("No se pudo crear hebra de chequeo de hora\n");
+	}
+
+	if (pthread_create(&hebra_ethernet, NULL, funcion_mensajes_ethernet, (void *)&hebra_ethernet) != 0)
+	{
+		printf("No se pudo crear hebra de Ethernet\n");
 	}
 	
 	inicializar_GPIO();
